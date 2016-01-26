@@ -10,9 +10,7 @@
 
 -module(soln).
 -export([recursedown/2]).
-
-digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
-digitize(N) -> digitize(N div 10)++[N rem 10].
+-import(shared_euler, [digitize/1]).
 
 checkpal(P) ->
     case length(P) > 1 of
@@ -28,12 +26,12 @@ checkpal(P) ->
     end.
 
 recursedown(I,J) ->
-    R = erlang:get({'recursedown', I, J}),
-    case is_integer(R) of
-        true -> R;
+    F = erlang:get({'recursedown', I, J}),
+    case is_integer(F) of
+        true -> F;
         false  ->
             P = I*J,           
-            case checkpal(digitize(P))  == true of                   
+            case checkpal(digitize(P))  of                  
                 true -> R = P;                   
                 false -> R = erlang:max(recursedown(I-1, J), recursedown(I, J-1))                   
             end,                   
