@@ -13,39 +13,39 @@
 -export([solve/0]).
 
 collatz(L) ->
-    [H|_] = L,
+    [H|T] = L,
     F = erlang:get({'collatz', H}),
-    if F /= undefined -> 
-        erlang:display(F),
-        L;
-    true -> 
-        if H == 1 -> 
-            erlang:put({'collatz', H}, {L}),
-            F2 = erlang:get({'collatz', H}),
-             erlang:display(F2),
-            L;
-        true ->  
-            if H rem 2 == 0 -> 
-                collatz([H div 2 | L]);
-            true ->
-                collatz([3*H+1 | L])
-            end
-        end
+    case is_list(F) of 
+        true ->
+            R = lists:append(F, T);
+        false ->
+            if H == 1 ->
+                R = L;
+            true ->  
+                if H rem 2 == 0 -> 
+                    R = collatz([H div 2 | L]);
+                true ->
+                    R = collatz([3*H+1 | L])
+                end
+            end,
+        erlang:put({'collatz', lists:last(L)}, R),
+        R
     end.
 
-dosolve(N, Max, MaxN) ->
-    erlang:display(N),
+
+dosolve(N, Max, MaxN, TheList) ->
     if N == 1000000 -> MaxN;
     true ->
-        M = length(collatz([N])),
-        if M > Max -> dosolve(N+1, M, N);
+        L = collatz([N]),
+        M = length(L),
+        if M > Max -> dosolve(N+1, M, N, L);
         true -> 
-            dosolve(N+1, Max, MaxN)
+            dosolve(N+1, Max, MaxN, TheList)
         end
     end.
 
 solve() ->
     {Megass, Ss, Micros} = erlang:timestamp(),
-    S =     dosolve(1, -1, 1),
+     S =     dosolve(1, -1, 1, []),
     {Megase, Se, Microe} = erlang:timestamp(),
     {Megase-Megass, Se-Ss, Microe-Micros, S}.
