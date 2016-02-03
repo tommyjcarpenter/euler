@@ -4,29 +4,8 @@
 %What is the 10 001st prime number?
 %
 -module(soln7).
+-import(shared_euler, [isprime/1]).
 -export([findnthprime/1]).
-
-doisprime(I, 1) -> 
-    case I of 
-        1 -> false;
-        _ -> true
-    end;
-doisprime(I, J) when J > 1->
-    case I rem J of 
-        0 -> false;
-        _ -> doisprime(I, J-1)
-    end.
-isprime(I) ->
-    case I < 3 of 
-        true -> true;
-        false -> 
-            case I rem 2 of 
-                0 -> false; %optimization; before entering recursive loop, check if even
-                _ -> 
-                    doisprime(I, erlang:trunc(math:sqrt(I)))
-            end
-    end.
-
 
 %             cur_num, N, found_so_far
 dofindnprimes(I, J, K) ->

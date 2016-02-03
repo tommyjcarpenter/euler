@@ -27,11 +27,10 @@ collatz(L) ->
                 true ->
                     R = collatz([3*H+1 | L])
                 end
-            end,
-        erlang:put({'collatz', lists:last(L)}, R),
-        R
-    end.
-
+            end
+    end,
+    erlang:put({'collatz', lists:last(L)}, R),
+    R.
 
 dosolve(N, Max, MaxN, TheList) ->
     if N == 1000000 -> MaxN;
