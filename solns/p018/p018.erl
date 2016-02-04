@@ -1,4 +1,4 @@
--module(p18).
+-module(p018).
 -export([solve/0]).
 
 solve() ->
