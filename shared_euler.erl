@@ -1,5 +1,9 @@
 -module(shared_euler).
--export([digitize/1, listslice/3, isprime/1, perms/1, alphabetnum/1, seive/1, setnth/3]).
+-export([digitize/1, listslice/3, isprime/1, perms/1, alphabetnum/1, seive/1, setnth/3, bjoin/1]).
+
+bjoin(L) ->   
+    F = fun(A, B) -> <<A/binary, B/binary>> end,
+    lists:foldr(F, <<>>, L).
 
 digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
 digitize(N) -> digitize(N div 10)++[N rem 10].
@@ -54,12 +58,8 @@ doisprime(I, J) when J > 1->
 %2. Find the next number in the table after p that is not yet crossed off and set
 %p to that number; and then repeat from step 1.
 %
-seive(N) ->
-    L = lists:seq(1,N),
-    {Megass, Ss, Micros} = erlang:timestamp(),
-    S = doseive(L, 2),
-    {Megase, Se, Microe} = erlang:timestamp(),
-    {Megase-Megass, Se-Ss, Microe-Micros, S}.
+seive(N) -> 
+    [_|T] = doseive(lists:seq(1,N), 2), T.
 
 doseive(L, Index) ->
     Isq = Index*Index-1,
