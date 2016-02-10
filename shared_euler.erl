@@ -1,5 +1,5 @@
 -module(shared_euler).
--export([digitize/1, listslice/3, isprime/1, perms/1, alphabetnum/1, seive/1]).
+-export([digitize/1, listslice/3, isprime/1, perms/1, alphabetnum/1, seive/1, setnth/3]).
 
 digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
 digitize(N) -> digitize(N div 10)++[N rem 10].
@@ -72,3 +72,6 @@ doseive(L, Index) ->
              L3 = lists:map(fun(X) -> if X == -1 orelse (X rem Index == 0 andalso X /= Index) -> -1; true  -> X  end end , L2),
              doseive(lists:append(L1, L3), Index + 1)
     end end.
+
+setnth([_|Rest], 1, New) -> [New|Rest];
+setnth([E|Rest], I, New) -> [E|setnth(Rest, I-1, New)].
