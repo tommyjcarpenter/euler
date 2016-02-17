@@ -1,6 +1,9 @@
 -module(eulermath).
 -export([isprime/1, digitize/1, seive/1, is_perm_of/2]).
 
+factorial(0) -> 1;
+factorial(N) -> N * factorial(N-1).
+
 %determines if a number is prime
 isprime(I) ->
     case I < 2  of 
