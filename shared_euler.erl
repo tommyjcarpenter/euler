@@ -1,5 +1,5 @@
 -module(shared_euler).
--export([digitize/1, listslice/3, isprime/1, perms/1, alphabetnum/1, seive/1, setnth/3, bjoin/1]).
+-export([digitize/1, listslice/3, isprime/1, perms/1, alphabetnum/1, seive/1, setnth/3, bjoin/1, is_perm_of/2, list_to_freq_map/1]).
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,
@@ -47,6 +47,24 @@ doisprime(I, J) when J > 1->
         0 -> false;
         _ -> doisprime(I, J-1)
     end.
+
+
+is_perm_of(X, Y) ->
+    %determines if X is a permutation of Y
+    BLX = [A || <<A:1/binary>> <= erlang:integer_to_binary(X)], %http://stackoverflow.com/questions/29472556/split-erlang-utf8-binary-by-characters, %http://stackoverflow.com/questions/6142120/erlang-howto-make-a-list-from-this-binary-a-b-c
+    BLY = [A || <<A:1/binary>> <= erlang:integer_to_binary(Y)], %http://stackoverflow.com/questions/29472556/split-erlang-utf8-binary-by-characters, %http://stackoverflow.com/questions/6142120/erlang-howto-make-a-list-from-this-binary-a-b-c
+    list_to_freq_map(BLX) == list_to_freq_map(BLY).
+
+list_to_freq_map(L) ->
+    doltofm(L, dict:new()).
+doltofm([], D) -> D;
+doltofm([H|T], D) ->
+    doltofm(T, dict:update(H, fun(X) -> X+1 end, 1, D)).
+
+    
+
+
+
 
 
 %Let us first describe the original “by hand” sieve algorithm as practiced by Eratosthenes.
