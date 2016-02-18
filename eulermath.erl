@@ -1,5 +1,5 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1]).
+-export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1]).
 
 fib(N) ->
     if N < 2 -> N;
@@ -18,16 +18,14 @@ factorial(N) -> N * factorial(N-1).
 
 %determines if a number is prime
 isprime(I) ->
-    case I < 2  of 
-        true -> false;
-        false -> case I < 3 of 
-                     true -> true;
-                     false ->  case I rem 2 of 
-                                   0 -> false; %optimization; before entering recursive loop, check if even
-                                   _ -> doisprime(I, erlang:trunc(math:sqrt(I)))
-                     end
-         end
-    end.
+    case I of
+        1 -> false;
+        2 -> true;
+        _ -> case I rem 2 of 
+                   0 -> false; %optimization; before entering recursive loop, check if even
+                   _ -> doisprime(I, erlang:trunc(math:sqrt(I)))
+                   end
+     end.
 doisprime(I, 1) -> 
     case I of 
         1 -> false;
@@ -42,6 +40,11 @@ doisprime(I, J) when J > 1->
 %creates a list of digits from an int
 digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
 digitize(N) -> digitize(N div 10)++[N rem 10].
+
+digit_list_to_integer(L) -> trunc(dltoi(lists:reverse(L), 0)).
+dltoi([], I) -> 0;
+dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
+
 
 %determines if X is a permutation of Y
 is_perm_of(X, Y) ->
