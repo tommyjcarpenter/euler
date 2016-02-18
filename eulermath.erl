@@ -1,6 +1,18 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2]).
+-export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1]).
 
+fib(N) ->
+    if N < 2 -> N;
+    true ->
+        F = erlang:get({'fib', N}),
+        case is_integer(F) of 
+            true -> F;
+            false -> R = fib(N-1) + fib(N-2),
+                     erlang:put({'fib', N}, R),
+                     R
+        end
+    end.
+    
 factorial(0) -> 1;
 factorial(N) -> N * factorial(N-1).
 
