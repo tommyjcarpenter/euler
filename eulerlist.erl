@@ -1,5 +1,5 @@
 -module(eulerlist).
--export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1]).
+-export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2]).
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,
@@ -27,3 +27,22 @@ doltofm([H|T], D) ->
 
 setnth([_|Rest], 1, New) -> [New|Rest];
 setnth([E|Rest], I, New) -> [E|setnth(Rest, I-1, New)].
+
+%binary search stolen from https://gist.github.com/Janiczek/3133037
+
+binary_search(List, N) ->
+  Length = length(List),
+  Middle = (Length + 1) div 2, %% saves us hassle with odd/even indexes
+  case Middle of
+    0 -> false; %% empty list -> item not found
+    _ -> 
+      Item = lists:nth(Middle, List),
+      
+      case Item of
+        N -> true; %% yay, found it!
+        _ -> case Item > N of
+               true  -> binary_search(lists:sublist(List, Length - Middle), N); %% LT, search on left side
+               false -> binary_search(lists:nthtail(Middle, List), N)           %% GT, search on right side
+             end
+      end
+  end.

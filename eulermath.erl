@@ -1,5 +1,5 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1]).
+-export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1]).
 
 fib(N) ->
     if N < 2 -> N;
@@ -37,14 +37,26 @@ doisprime(I, J) when J > 1->
         _ -> doisprime(I, J-1)
     end.
 
+%finds the list of all proper divisors of a number
+proper_divisors(N) ->
+    dopropdivisors(N, 1, erlang:trunc(N/2)).
+dopropdivisors(N, Curr, UpTo) ->
+    if Curr > UpTo -> [];
+    true -> 
+        if N rem Curr =:= 0 ->
+            [Curr | dopropdivisors(N, Curr+1, UpTo)];
+        true -> 
+            dopropdivisors(N, Curr+1, UpTo)
+        end
+    end.
+
 %creates a list of digits from an int
 digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
 digitize(N) -> digitize(N div 10)++[N rem 10].
 
 digit_list_to_integer(L) -> trunc(dltoi(lists:reverse(L), 0)).
-dltoi([], I) -> 0;
+dltoi([], _) -> 0;
 dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
-
 
 %determines if X is a permutation of Y
 is_perm_of(X, Y) ->
