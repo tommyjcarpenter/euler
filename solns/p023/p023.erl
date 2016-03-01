@@ -23,7 +23,7 @@ solve() ->
     TryThese = lists:seq(1,28123),
     Abs = lists:sort([X || X <- TryThese, abundant(X)]),
     erlang:display(length(Abs)),
-    Can = lists:sort(sets:to_list(sets:from_list([A+B || A <- Abs, B <- Abs, A+B =< 28123]))),
+    Can = lists:sort(eulermath:remove_duplicates([A+B || A <- Abs, B <- Abs, A+B =< 28123])),
     erlang:display(length(Can)),
     lists:sum([ X || X <- TryThese, eulerlist:binary_search(Can, X) == false]).
 

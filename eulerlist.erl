@@ -1,5 +1,6 @@
 -module(eulerlist).
--export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2]).
+-export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
+        remove_duplicates/1]).
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,
@@ -28,8 +29,9 @@ doltofm([H|T], D) ->
 setnth([_|Rest], 1, New) -> [New|Rest];
 setnth([E|Rest], I, New) -> [E|setnth(Rest, I-1, New)].
 
-%binary search stolen from https://gist.github.com/Janiczek/3133037
+remove_duplicates(L) -> sets:to_list(sets:from_list(L)).
 
+%binary search stolen from https://gist.github.com/Janiczek/3133037
 binary_search(List, N) ->
   Length = length(List),
   Middle = (Length + 1) div 2, %% saves us hassle with odd/even indexes

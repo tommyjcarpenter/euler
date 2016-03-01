@@ -1,5 +1,10 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1]).
+-export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1,
+        integerpow/2]).
+
+%raise N^M
+integerpow(N, 1) -> N;
+integerpow(N, M) -> N*integerpow(N, M-1).
 
 fib(N) ->
     if N < 2 -> N;
