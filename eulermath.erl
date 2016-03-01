@@ -1,6 +1,30 @@
 -module(eulermath).
 -export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1,
-        integerpow/2]).
+        integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
+        is_pandigital_list/2, is_pandigital_num/2]).
+
+%3> eulermath:perms_int(42).
+%[42,24]
+perms_int(N) ->
+    Ps = eulerlist:perms(eulermath:digitize(N)),
+    lists:map(fun(X) -> {I,_} = string:to_integer(lists:concat(X)), I end, Ps).
+
+%3> eulermath:perms_inc_less_than_int(42).
+%[4,42,24,2]
+perms_inc_less_than_int(N) ->
+    Ps = eulerlist:perms_inc_less_than(eulermath:digitize(N)),
+    lists:map(fun(X) -> {I,_} = string:to_integer(lists:concat(X)), I end, Ps).
+
+%We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once;
+is_pandigital_num(Num) -> is_pandigital_list(eulermath:digitize(Num)).
+is_pandigital_num(Num, NDigit) ->  is_pandigital_list(eulermath:digitize(Num), NDigit).
+
+is_pandigital_list(Digits) -> is_pandigital_list(Digits,length(Digits)). %default n-digit is length of digits
+is_pandigital_list(Digits, NDigit) ->
+    %mthodology: build a freq map, then make sure each value exaclty 1
+    FM = eulerlist:list_to_freq_map(Digits),
+    Identity = eulerlist:list_to_freq_map(lists:seq(1, NDigit)),
+    FM == Identity.
 
 %raise N^M
 integerpow(N, 1) -> N;

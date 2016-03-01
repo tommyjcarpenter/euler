@@ -1,12 +1,20 @@
 -module(eulerlist).
 -export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
-        remove_duplicates/1]).
+        remove_duplicates/1, perms_inc_less_than/1]).
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,
     lists:foldr(F, <<>>, L).
 
+%1> eulerlist:perms_inc_less_than([4,2]).
+%[[4],[4,2],[2,4],[2]]
+perms_inc_less_than([]) -> [];
+perms_inc_less_than([H|[]]) -> [[H]];
+perms_inc_less_than([H|T]) -> [[H]] ++ eulerlist:perms([H|T]) ++ perms_inc_less_than(T).
+
 %stolen from the erlang book
+%1> eulerlist:perms([4,2]).
+%[[4,2],[2,4]]
 perms([]) -> [[]];
 perms(L)  -> [[H|T] || H <- L, T <- perms(L--[H])].
 
