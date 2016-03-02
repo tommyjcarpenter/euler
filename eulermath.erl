@@ -1,7 +1,7 @@
 -module(eulermath).
 -export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
-        is_pandigital_list/2, is_pandigital_num/2, prime_factorization/1, mode/1, intconcat/2]).
+        is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, mode/1, intconcat/2]).
 
 -spec intconcat(integer(), integer()) -> integer().
 intconcat(X, Y) -> dointconcat(X, Y, 10).
@@ -21,17 +21,30 @@ domode([H|T], FM, MaxKey, MaxVal) ->
     true -> domode(T, FM, MaxKey, MaxVal)
     end.
 
+digit_list_to_int(L) -> {I,_} = string:to_integer(lists:concat(L)), I.
+
+mode(L) ->
+    FM = eulerlist:list_to_freq_map(L),
+    Keys = dict:fetch_keys(FM),
+    domode(Keys, FM, -1, -1).
+domode([], _, MaxKey, _) -> MaxKey;
+domode([H|T], FM, MaxKey, MaxVal) ->
+    Val =  dict:fetch(H, FM),
+    if Val > MaxVal -> domode(T, FM, H, Val);
+    true -> domode(T, FM, MaxKey, MaxVal)
+    end.
+
 %3> eulermath:perms_int(42).
 %[42,24]
 perms_int(N) ->
     Ps = eulerlist:perms(eulermath:digitize(N)),
-    lists:map(fun(X) -> {I,_} = string:to_integer(lists:concat(X)), I end, Ps).
+    lists:map(fun(X) -> digit_list_to_int(X) end, Ps).
 
 %3> eulermath:perms_inc_less_than_int(42).
 %[4,42,24,2]
 perms_inc_less_than_int(N) ->
     Ps = eulerlist:perms_inc_less_than(eulermath:digitize(N)),
-    lists:map(fun(X) -> {I,_} = string:to_integer(lists:concat(X)), I end, Ps).
+    lists:map(fun(X) -> digit_list_to_int(X) end, Ps).
 
 %We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once;
 is_pandigital_num(Num) -> is_pandigital_list(eulermath:digitize(Num)).
@@ -96,7 +109,6 @@ dopropdivisors(N, Curr, UpTo) ->
             dopropdivisors(N, Curr+1, UpTo)
         end
     end.
-
 
 prime_factorization(N) ->
    dopf(eulermath:seive(N), N).
