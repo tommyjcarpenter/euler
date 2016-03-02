@@ -1,7 +1,18 @@
 -module(eulermath).
 -export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
-        is_pandigital_list/2, is_pandigital_num/2]).
+        is_pandigital_list/2, is_pandigital_num/2, prime_factorization/1, mode/1]).
+
+mode(L) ->
+    FM = eulerlist:list_to_freq_map(L),
+    Keys = dict:fetch_keys(FM),
+    domode(Keys, FM, -1, -1).
+domode([], _, MaxKey, _) -> MaxKey;
+domode([H|T], FM, MaxKey, MaxVal) ->
+    Val =  dict:fetch(H, FM),
+    if Val > MaxVal -> domode(T, FM, H, Val);
+    true -> domode(T, FM, MaxKey, MaxVal)
+    end.
 
 %3> eulermath:perms_int(42).
 %[42,24]
@@ -76,6 +87,19 @@ dopropdivisors(N, Curr, UpTo) ->
             [Curr | dopropdivisors(N, Curr+1, UpTo)];
         true -> 
             dopropdivisors(N, Curr+1, UpTo)
+        end
+    end.
+
+
+prime_factorization(N) ->
+   dopf(eulermath:seive(N), N).
+dopf(Primes, N) ->
+    [H|T] = Primes,
+    if H > N -> [];
+    true ->
+        case  N rem H == 0 of
+            true -> [H | dopf(Primes, trunc(N/H))]; %factors could repeat dont remove head
+            _ -> dopf(T, N)
         end
     end.
 
