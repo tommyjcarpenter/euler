@@ -112,10 +112,11 @@ dltoi([], _) -> 0;
 dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
 
 %determines if X is a permutation of Y
+-spec is_perm_of(integer(), integer()) -> integer().
 is_perm_of(X, Y) ->
     BLX = [A || <<A:1/binary>> <= erlang:integer_to_binary(X)], %http://stackoverflow.com/questions/29472556/split-erlang-utf8-binary-by-characters, %http://stackoverflow.com/questions/6142120/erlang-howto-make-a-list-from-this-binary-a-b-c
     BLY = [A || <<A:1/binary>> <= erlang:integer_to_binary(Y)], %http://stackoverflow.com/questions/29472556/split-erlang-utf8-binary-by-characters, %http://stackoverflow.com/questions/6142120/erlang-howto-make-a-list-from-this-binary-a-b-c
-    shared_euler:list_to_freq_map(BLX) == shared_euler:list_to_freq_map(BLY).
+    eulerlist:list_to_freq_map(BLX) == eulerlist:list_to_freq_map(BLY).
 
 %Let us first describe the original “by hand” sieve algorithm as practiced by Eratosthenes.
 %We start with a table of numbers (e.g., 2, 3, 4, 5, . . . ) and progressively
