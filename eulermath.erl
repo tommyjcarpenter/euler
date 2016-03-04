@@ -1,7 +1,14 @@
 -module(eulermath).
 -export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
-        is_pandigital_list/2, is_pandigital_num/2, prime_factorization/1, mode/1]).
+        is_pandigital_list/2, is_pandigital_num/2, prime_factorization/1, mode/1, intconcat/2]).
+
+-spec intconcat(integer(), integer()) -> integer().
+intconcat(X, Y) -> dointconcat(X, Y, 10).
+dointconcat(X, Y, Pow) ->
+    if Y >= Pow -> dointconcat(X,Y,Pow*10);
+    true -> X*Pow + Y
+    end.
 
 mode(L) ->
     FM = eulerlist:list_to_freq_map(L),
