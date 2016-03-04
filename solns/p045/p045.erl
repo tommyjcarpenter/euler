@@ -15,20 +15,8 @@ timesolve() -> timer:tc(p045, solve, []).
 solve() ->
     recurseup(40756).
 
-istri(N) ->
-    X = (-1 + math:sqrt(1+8*N))/2,
-    X == trunc(X).
-
-ispent(N) ->
-    X = (1 + math:sqrt(1+24*N))/6,
-    X == trunc(X).
-
-ishex(N) ->
-    X = (1 + math:sqrt(1+8*N))/4,
-    X == trunc(X).
-
 recurseup(N) ->
-    case istri(N) andalso ispent(N) andalso ishex(N) of 
+    case eulermath:istri(N) andalso eulermath:ispent(N) andalso eulermath:ishex(N) of 
         true -> N;
         false -> recurseup(N+1)
     end.

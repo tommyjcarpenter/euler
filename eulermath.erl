@@ -1,7 +1,8 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, proper_divisors/1,
+-export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
-        is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, mode/1, intconcat/2]).
+        is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, mode/1, intconcat/2,
+        istri/1, tri_n/1, ispent/1, ishex/1]).
 
 -spec intconcat(integer(), integer()) -> integer().
 intconcat(X, Y) -> dointconcat(X, Y, 10).
@@ -91,16 +92,39 @@ doisprime(I, J) when J > 1->
 
 %finds the list of all proper divisors of a number
 proper_divisors(N) ->
-    dopropdivisors(N, 1, erlang:trunc(N/2)).
+    dopropdivisors(N, 2, erlang:trunc(math:sqrt(N))).
 dopropdivisors(N, Curr, UpTo) ->
-    if Curr > UpTo -> [];
+    if Curr > UpTo -> [1]; %include 1 but not N itself
     true -> 
-        if N rem Curr =:= 0 ->
-            [Curr | dopropdivisors(N, Curr+1, UpTo)];
+        K = N / Curr,
+        KT = trunc(K),
+        if K == KT -> %if K is integer, K and curr are divisors
+            [KT | [Curr | dopropdivisors(N, Curr+1, UpTo)]];
         true -> 
             dopropdivisors(N, Curr+1, UpTo)
         end
     end.
+
+%finds the number of proper divisors in a faster way than
+%length(proper_divisors)
+num_proper_divisors(N) ->
+    donumpropdivisors(N, 1, erlang:trunc(math:sqrt(N)), 0).
+donumpropdivisors(N, Cur, UpTo, Acc) ->
+    if Cur > UpTo -> Acc;
+    true -> 
+        if N rem Cur =:= 0 ->
+            donumpropdivisors(N, Cur+1, UpTo, Acc+2); %see above 
+        true -> 
+            donumpropdivisors(N, Cur+1, UpTo, Acc)
+        end
+    end.
+
+
+
+
+
+
+
 
 prime_factorization(N) ->
    dopf(eulermath:seive(N), N).
@@ -148,3 +172,10 @@ doseive(L, Index) ->
              L3 = lists:map(fun(X) -> if X == -1 orelse (X rem Index == 0 andalso X /= Index) -> -1; true  -> X  end end , L2),
              doseive(lists:append(L1, L3), Index + 1)
     end end.
+
+%triangular, pentagnol, hexagonal numbers
+istri(N) -> X = (-1 + math:sqrt(1+8*N))/2, X == trunc(X).
+tri_n(N) -> trunc(N*(N+1)/2).
+ispent(N) -> X = (1 + math:sqrt(1+24*N))/6, X == trunc(X).
+ishex(N) -> X = (1 + math:sqrt(1+8*N))/4, X == trunc(X).
+%see trimath.jpg
