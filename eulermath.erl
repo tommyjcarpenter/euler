@@ -51,8 +51,9 @@ is_pandigital_list(Digits, NDigit) ->
     FM == Identity.
 
 %raise N^M
-integerpow(N, 1) -> N;
-integerpow(N, M) -> N*integerpow(N, M-1).
+integerpow(N, M) -> dointegerpow(N, M, 1).
+dointegerpow(N, 1, Acc) -> N*Acc;
+dointegerpow(N, M, Acc) -> dointegerpow(N, M-1, Acc*N).
 
 fib(N) ->
     if N < 2 -> N;
