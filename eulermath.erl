@@ -1,5 +1,5 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, digit_list_to_integer/1, proper_divisors/1,
+-export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
         is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, mode/1, intconcat/2]).
 
@@ -21,18 +21,10 @@ domode([H|T], FM, MaxKey, MaxVal) ->
     true -> domode(T, FM, MaxKey, MaxVal)
     end.
 
-digit_list_to_int(L) -> {I,_} = string:to_integer(lists:concat(L)), I.
-
-mode(L) ->
-    FM = eulerlist:list_to_freq_map(L),
-    Keys = dict:fetch_keys(FM),
-    domode(Keys, FM, -1, -1).
-domode([], _, MaxKey, _) -> MaxKey;
-domode([H|T], FM, MaxKey, MaxVal) ->
-    Val =  dict:fetch(H, FM),
-    if Val > MaxVal -> domode(T, FM, H, Val);
-    true -> domode(T, FM, MaxKey, MaxVal)
-    end.
+%digit_list_to_int(L) -> {I,_} = string:to_integer(lists:concat(L)), I.
+digit_list_to_int(L) -> trunc(dltoi(lists:reverse(L), 0)).
+dltoi([], _) -> 0;
+dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
 
 %3> eulermath:perms_int(42).
 %[42,24]
@@ -125,10 +117,6 @@ dopf(Primes, N) ->
 %creates a list of digits from an int
 digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
 digitize(N) -> digitize(N div 10)++[N rem 10].
-
-digit_list_to_integer(L) -> trunc(dltoi(lists:reverse(L), 0)).
-dltoi([], _) -> 0;
-dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
 
 %determines if X is a permutation of Y
 -spec is_perm_of(integer(), integer()) -> integer().
