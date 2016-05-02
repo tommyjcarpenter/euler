@@ -3,6 +3,7 @@
 *.swp
 *.swo
 *.swn
+*.swm
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
