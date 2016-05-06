@@ -29,33 +29,86 @@
 
 timesolve() -> timer:tc(p122, solve, []).
 
-solve() -> 
-    S = sets:from_list([1,2]),
-    S2 = sets:from_list([1,2,3]),
-    erlang:min(minimal_sum(S, 15, 0), minimal_sum(S2, 15, 1)).
+solve() ->
+    %1 + lists:sum(lists:map(fun(X) -> docost(X) end, lists:seq(2,100))).
+    docost(50).
 
-%solve_k(K) -> solve_for_k([1], K, 0).
-%solve_for_k(SetsoFar, K, AddSoFar) ->
-%    Solns = [X || X <- SetsoFar, X+
+docost(Target) -> 
+    erlang:display(Target), 
+    cost(Target, sets:from_list([1])).
 
-%Figures out minimal number of additions from Set to get to Target
-% Does this by taking min(solution using largest), min(solution without using largest) at each step
-minimal_sum(Set, Target, NumberAdds) ->
-    SL = sets:to_list(Set),
-    if length(SL) == 0 -> 1000000000000000000000000000000000; %something big because this solution is infeasible
-    true -> 
-        Solns = [X || X <- SL,  X == Target],
-        if length(Solns) == 1 -> NumberAdds; %get to target
-        true ->
-            M = lists:max(SL),
-            erlang:min(minimal_sum(Set, Target-M, NumberAdds+1), minimal_sum(sets:del_element(M, Set), Target, NumberAdds))
-        end
+check_cache(Target, Set) ->
+    Cache = erlang:get({'cost', Target, Set}),
+    if is_integer(Cache) -> Cache;
+    true -> cost(Target, Set)
     end.
 
-    
-
-
-
-
-
-
+cost(Target, Set) ->
+    case sets:is_element(Target, Set) of
+        true -> 0;
+        false ->
+             Pairs = [{X,Y} || X <- lists:seq(1,Target-1), Y <- lists:seq(1, Target-1), X+Y == Target, X >= Y],
+                C = lists:min(lists:map(fun({X,Y}) ->
+                                            if X == Y -> 1+ check_cache(Y, Set); %only pay for Y once
+                                            true -> 1+ check_cache(Y, Set) + check_cache(X, sets:add_element(Y, Set)) %Only pay for Y once
+                                            end
+                                            end, Pairs)),
+             %end,
+             erlang:put({'cost', Target, Set}, C),
+             C
+    end.
+%
+%
+%
+%test(Target, OrigTarget, StepsSoFar) ->
+%    erlang:display(Target),
+%    C = erlang:get({'test', OrigTarget}),
+%    case is_integer(C) of 
+%        true -> C;
+%        false ->
+%            if Target == 1 -> 
+%                StepsSoFar;
+%            true -> 
+%                PossSums = [erlang:max(A,B) || A <- lists:seq(1,Target), B <- lists:seq(1,Target), A + B == Target],
+%                A = lists:min(lists:map(fun(X) -> test(X, OrigTarget, StepsSoFar+1) end, PossSums)),
+%               %erlang:put({'test', OrigTarget}, A),
+%               A
+%        end      
+%    end.
+%        
+%set_expand_until_target_found(Set, ExpansionNum, Target) ->
+%    case sets:is_element(Target, Set) of 
+%        true -> erlang:display({Set, Target, ExpansionNum}), ExpansionNum;
+%        _ ->
+%             SL = sets:to_list(Set),
+%             AllSums = [X+Y || X <- SL, Y <- SL, not sets:is_element(X+Y, Set)],
+%             lists:min(lists:map(fun(X) -> set_expand_until_target_found(sets:add_element(X, Set), ExpansionNum+1, Target) end, AllSums))
+%             %set_expand_until_target_found(NewSet, ExpansionNum+1, Target)
+%    end.
+%         
+%
+%%solve_k(K) -> solve_for_k([1], K, 0).
+%%solve_for_k(SetsoFar, K, AddSoFar) ->
+%%    Solns = [X || X <- SetsoFar, X+
+%
+%%Figures out minimal number of additions from Set to get to Target
+%% Does this by taking min(solution using largest), min(solution without using largest) at each step
+%minimal_sum(Set, Target, NumberAdds) ->
+%    SL = sets:to_list(Set),
+%    if length(SL) == 0 -> 1000000000000000000000000000000000; %something big because this solution is infeasible
+%    true -> 
+%        Solns = [X || X <- SL,  X == Target],
+%        if length(Solns) == 1 -> NumberAdds; %get to target
+%        true ->
+%            M = lists:max(SL),
+%            erlang:min(minimal_sum(Set, Target-M, NumberAdds+1), minimal_sum(sets:del_element(M, Set), Target, NumberAdds))
+%        end
+%    end.
+%
+%    
+%
+%
+%
+%
+%
+%
