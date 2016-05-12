@@ -13,4 +13,4 @@ solve() ->
 
 recursedown([], Index) -> 0;
 recursedown([H|T], Index) ->
-    Index*lists:sum(lists:map(fun(X) -> shared_euler:alphabetnum(X) end, H)) + recursedown(T, Index+1).
+    Index*lists:sum(lists:map(fun(X) -> eulerlist:alphabetnum(X) end, H)) + recursedown(T, Index+1).

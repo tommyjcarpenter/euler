@@ -13,16 +13,8 @@
 -module(p067).
 -export([solve/0]).
 
-readlines(FileName) ->
-    {ok, Data} = file:read_file(FileName),
-    binary:split(Data, [<<"\n">>], [global]).
-
 solve() ->
-    F = readlines("p067_triangle.txt"),
-    F2 = lists:map(fun(X) ->  binary:split(X, [<<" ">>], [global]) end, F),
-    F3 = lists:filter(fun(X) -> X /= [<<>>] end, F2), 
-    F4 = [lists:map(fun(Y) -> erlang:binary_to_integer(Y) end, X) || X <- F3],
-    dosolve(F4).
+    dosolve(eulerfile:file_to_matrix_space("p067_triangle.txt")).
 
 %%%
 %%%Code here below was copy and pasted directly from p018

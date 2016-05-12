@@ -34,6 +34,7 @@ doltofm([], D) -> D;
 doltofm([H|T], D) ->
     doltofm(T, dict:update(H, fun(X) -> X+1 end, 1, D)).
 
+%% setnth(List, Index, NewElement) -> List.
 setnth([_|Rest], 1, New) -> [New|Rest];
 setnth([E|Rest], I, New) -> [E|setnth(Rest, I-1, New)].
 
