@@ -1,6 +1,11 @@
 -module(eulerlist).
 -export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
-        remove_duplicates/1, perms_inc_less_than/1]).
+        remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, all_true/1]).
+
+all_true(L) ->
+    %checks if an entire list is true. Common use is a after a map to see
+    %if a condition holds for all elements
+    lists:foldl(fun(X, Last) -> X andalso Last end, true, L).
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,
@@ -17,6 +22,9 @@ perms_inc_less_than([H|T]) -> [[H]] ++ eulerlist:perms([H|T]) ++ perms_inc_less_
 %[[4,2],[2,4]]
 perms([]) -> [[]];
 perms(L)  -> [[H|T] || H <- L, T <- perms(L--[H])].
+
+all_proper_subsets([]) -> [];
+all_proper_subsets([H|T]) ->  [T] ++  lists:map(fun(X) -> lists:flatten([H, X]) end, all_proper_subsets(T)) ++ all_proper_subsets(T).
 
 listslice(StartIndex, EndIndex, L) ->
     {ToE, _} = lists:split(EndIndex, L),
