@@ -32,7 +32,7 @@ solve() ->
     %N6 =     [11, 18, 19, 20, 22, 25]
     %N7 = [20, 31, 38, 39, 40, 42, 45], %sum = 255
     Min = 1,
-    M = 55,
+    M = 45,
     P = [[A,B,C,D,E,F,G] ||
          A <- lists:seq(Min, M), 
          B <- lists:seq(A+1, M), 
@@ -44,7 +44,7 @@ solve() ->
         %(Cond 1 means that no two elements can be equal either)
         check([A,B,C,D,E,F,G]) == true], %Cond 1 means that no two elements can be equal either
      erlang:display(length(P)),
-    P3 = plists:filter(fun(X) -> checkfinal(X) end, P, 100) %make sure we didn't miss any constraitns
+    P3 = plists:filter(fun(X) -> eulerlist:special_subset(X) end, P, 1) %make sure we didn't miss any constraitns
     ,
     {FinalSum, FinalList} = lists:min(lists:map(fun(X) -> {lists:sum(X), X} end, P3)),
      erlang:display({FinalSum, FinalList}).
@@ -84,21 +84,21 @@ check([A,B,C,D,E,F,G]) ->
          %of the invalid subset sums later in parllel.
         .
 
-checkfinal(F) ->
-    %really check; expensive
-    S = eulerlist:all_proper_subsets(F),
-    L = lists:map(fun({X, Y}) -> 
-        case lists:sum(X) /=  lists:sum(Y) of %check cond1
-            false -> false;
-            true  -> 
-            case length(X) == length(Y) of
-                true -> true;
-                false -> case length(X) > length(Y) of
-                             true -> lists:sum(X) > lists:sum(Y);
-                             false -> lists:sum(Y) > lists:sum(X)
-                         end
-                end
-           end
-        end,
-    [{X, Y} || X <- S, Y <- S, X /= Y]),
-    eulerlist:all_true(L).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

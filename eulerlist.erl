@@ -1,11 +1,28 @@
 -module(eulerlist).
 -export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
-        remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, all_true/1]).
+        remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, special_subset/1]).
 
-all_true(L) ->
-    %checks if an entire list is true. Common use is a after a map to see
-    %if a condition holds for all elements
-    lists:foldl(fun(X, Last) -> X andalso Last end, true, L).
+special_subset(F) ->
+    erlang:display(F),
+    %check condition from problem 103, 105
+    %WARNING; expensive. do not run too many times, filter first!
+    S = eulerlist:all_proper_subsets(F),
+    L = [{X, Y} || X <- S, Y <- S, X /= Y], 
+    plists:fold(
+      fun({X, Y}, Last) -> special_subset_check_ss({X, Y}) andalso Last end, true, L, {processes, schedulers}).
+
+special_subset_check_ss({X, Y}) ->
+            case lists:sum(X) /=  lists:sum(Y) of %check cond1
+              false -> false;
+              true  -> 
+              case length(X) == length(Y) of
+                true -> true;
+                false -> case length(X) > length(Y) of
+                             true -> lists:sum(X) > lists:sum(Y);
+                             false -> lists:sum(Y) > lists:sum(X)
+                         end
+                end
+            end.
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,
