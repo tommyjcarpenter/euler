@@ -1,28 +1,45 @@
 -module(eulerlist).
 -export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
-        remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, special_subset/1]).
+        remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, special_subset/1,
+        every_element_bigger/2]).
 
 special_subset(F) ->
-    erlang:display(F),
-    %check condition from problem 103, 105
+    %check condition from problem 103, 105:
+    %Let S(A) represent the sum of elements in set A of size n. We shall call it a special sum set
+    %if for any two non-empty disjoint subsets, B and C, the following properties are true:
+    %
+    % 1) S(B) ≠ S(C); that is, sums of subsets cannot be equal.
+    % 2) If B contains more elements than C then S(B) > S(C).
+    %
+    % If they are of the same length, we must check 1 (2 does not apply).
+    % If they are NOT of the same length, we check 2. % Note that in this case, if 2 holds, 1 holds (if S(B) > S(C), then they are obv. not equal)
+    %
     %WARNING; expensive. do not run too many times, filter first!
     S = eulerlist:all_proper_subsets(F),
-    L = [{X, Y} || X <- S, Y <- S, X /= Y], 
-    plists:fold(
-      fun({X, Y}, Last) -> special_subset_check_ss({X, Y}) andalso Last end, true, L, {processes, schedulers}).
-
+    L =  [{X, Y} || X <- S, Y <- S, X > Y, X /= [], Y /= [], length(sets:to_list(sets:intersection(sets:from_list(X), sets:from_list(Y)))) == 0],
+    lists:foldl(
+      fun({X, Y}, Last) -> special_subset_check_ss({X, Y}) andalso Last end, true, L).%, {processes, schedulers}).
 special_subset_check_ss({X, Y}) ->
-            case lists:sum(X) /=  lists:sum(Y) of %check cond1
-              false -> false;
-              true  -> 
-              case length(X) == length(Y) of
-                true -> true;
-                false -> case length(X) > length(Y) of
-                             true -> lists:sum(X) > lists:sum(Y);
-                             false -> lists:sum(Y) > lists:sum(X)
-                         end
-                end
-            end.
+    case length(X) == length(Y) of
+       true -> erlang:display("asdf"), lists:sum(X) /= lists:sum(Y); %cond1
+       false -> %cond2
+          case length(X) > length(Y) of
+              true -> lists:sum(X) > lists:sum(Y);
+              false -> lists:sum(Y) > lists:sum(X)
+          end
+    end.
+   
+every_element_bigger(X, Y) ->
+    %determines whether, if X and Y are sorted lists of size N, whether X[i] > Y[i] forall i or Y[I] > X[I] for all i
+    SX = lists:sort(X),
+    SY = lists:sort(Y),
+    doeveryelb(SX, SY) orelse doeveryelb(SY, SX).
+doeveryelb([], []) -> true;
+doeveryelb([SXH | SXT], [SYH | SYT]) ->
+    case SXH > SYH of 
+    true -> doeveryelb(SXT, SYT);
+    false -> false
+    end.
 
 bjoin(L) ->   
     F = fun(A, B) -> <<A/binary, B/binary>> end,

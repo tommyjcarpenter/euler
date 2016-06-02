@@ -44,8 +44,7 @@ solve() ->
         %(Cond 1 means that no two elements can be equal either)
         check([A,B,C,D,E,F,G]) == true], %Cond 1 means that no two elements can be equal either
      erlang:display(length(P)),
-    P3 = plists:filter(fun(X) -> eulerlist:special_subset(X) end, P, 1) %make sure we didn't miss any constraitns
-    ,
+    P3 = plists:filter(fun(X) -> eulerlist:special_subset(X) end, P, {processes, schedulers}),  %make sure we didn't miss any constraitns
     {FinalSum, FinalList} = lists:min(lists:map(fun(X) -> {lists:sum(X), X} end, P3)),
      erlang:display({FinalSum, FinalList}).
 
