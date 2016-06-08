@@ -1,5 +1,5 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
+-export([isprime/1, digitize/1, seive/1, seive_dict/1, is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
         is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, prime_factorization/2, mode/1, intconcat/2,
         istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1]).
@@ -194,6 +194,9 @@ is_perm_of(X, Y) ->
     BLY = [A || <<A:1/binary>> <= erlang:integer_to_binary(Y)], %http://stackoverflow.com/questions/29472556/split-erlang-utf8-binary-by-characters, %http://stackoverflow.com/questions/6142120/erlang-howto-make-a-list-from-this-binary-a-b-c
     eulerlist:list_to_freq_map(BLX) == eulerlist:list_to_freq_map(BLY).
 
+%for when you want a seive in which to do repeated O(1) lookups on keys
+seive_dict(N) -> dict:from_list(lists:map(fun(X) -> {X, 1} end, seive(N))).
+
 %Let us first describe the original “by hand” sieve algorithm as practiced by Eratosthenes.
 %We start with a table of numbers (e.g., 2, 3, 4, 5, . . . ) and progressively
 %cross off numbers in the table until the only numbers left are primes. Specifically,
@@ -202,7 +205,6 @@ is_perm_of(X, Y) ->
 %table, starting from p^2;
 %2. Find the next number in the table after p that is not yet crossed off and set
 %p to that number; and then repeat from step 1.
-%
 seive(N) -> 
     [_|T] = doseive(lists:seq(1,N), 2), T.
 
@@ -215,7 +217,7 @@ doseive(L, Index) ->
         false -> 
             {L1, L2} = lists:split(Isq, L),
              L3 = lists:map(fun(X) -> if X == -1 orelse (X rem Index == 0 andalso X /= Index) -> -1; true  -> X  end end , L2),
-             doseive(lists:append(L1, L3), Index + 1)
+             doseive(L1 ++ L3, Index + 1)
     end end.
 
 %triangular, pentagnol, hexagonal numbers

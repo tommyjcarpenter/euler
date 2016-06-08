@@ -1,9 +1,18 @@
 -module(eulerlist).
--export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
-        remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, special_subset/1,
-        every_element_bigger/2, unique/1]).
+-export([flatten_one_layer/1,listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
+        remove_duplicates/1, perms_inc_less_than/1, all_subsets_no_empty/1, all_proper_subsets/1, special_subset/1,
+        every_element_bigger/2, perms_of_distinct_modulo_rotations/1]).
 
-unique(L) -> sets:to_list(sets:from_list(L)).
+perms_of_distinct_modulo_rotations([H|T]) -> 
+    %http://stackoverflow.com/questions/9028250/generating-all-permutations-excluding-cyclic-rotations
+    lists:map(fun(X) -> [H] ++ X end, eulerlist:perms(T)).
+
+%2> eulerlist:flatten_one_layer([[[1],[2],[3]]]).
+%[[1],[2],[3]]
+%3> eulerlist:flatten_one_layer([[1,2],[3,4]]).
+%[3,4,1,2]
+flatten_one_layer(L) ->
+    lists:foldl(fun(X, Acc) -> X ++ Acc end, [], L).
 
 special_subset(F) ->
     %check condition from problem 103, 105:
@@ -59,6 +68,8 @@ perms_inc_less_than([H|T]) -> [[H]] ++ eulerlist:perms([H|T]) ++ perms_inc_less_
 perms([]) -> [[]];
 perms(L)  -> [[H|T] || H <- L, T <- perms(L--[H])].
 
+all_subsets_no_empty(L) -> [X || X <- all_proper_subsets(L) ++ [L], X /= []].  
+
 all_proper_subsets([]) -> [];
 all_proper_subsets([H|T]) ->  [T] ++  lists:map(fun(X) -> lists:flatten([H, X]) end, all_proper_subsets(T)) ++ all_proper_subsets(T).
 
@@ -92,7 +103,6 @@ binary_search(List, N) ->
     0 -> false; %% empty list -> item not found
     _ -> 
       Item = lists:nth(Middle, List),
-      
       case Item of
         N -> true; %% yay, found it!
         _ -> case Item > N of
