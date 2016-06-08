@@ -1,7 +1,9 @@
 -module(eulerlist).
 -export([listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
         remove_duplicates/1, perms_inc_less_than/1, all_proper_subsets/1, special_subset/1,
-        every_element_bigger/2]).
+        every_element_bigger/2, unique/1]).
+
+unique(L) -> sets:to_list(sets:from_list(L)).
 
 special_subset(F) ->
     %check condition from problem 103, 105:
