@@ -70,6 +70,7 @@ domode([H|T], FM, MaxKey, MaxVal) ->
 
 %digit_list_to_int(L) -> {I,_} = string:to_integer(lists:concat(L)), I.
 digit_list_to_int(L) -> trunc(dltoi(lists:reverse(L), 0)).
+%the opposite of digitize
 dltoi([], _) -> 0;
 dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
 

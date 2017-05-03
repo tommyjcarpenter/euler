@@ -1,3 +1,2 @@
 #! /bin/bash
-erlc p037.erl
-erl -noshell -s p037 main -s init stop
+erlc p017.erl ; erl -eval 'p017:timesolve(), init:stop()' -noshell
