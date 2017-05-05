@@ -1,7 +1,13 @@
 -module(eulerlist).
 -export([flatten_one_layer/1,listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
         remove_duplicates/1, perms_inc_less_than/1, all_subsets_no_empty/1, all_proper_subsets/1, special_subset/1,
-        every_element_bigger/2, perms_of_distinct_modulo_rotations/1]).
+        every_element_bigger/2, perms_of_distinct_modulo_rotations/1,
+        is_perm_of_list/2,
+        is_perm_of_fd_list/2,
+        get_combinations/2,
+        interleave/2,
+        filter_permutations/1
+        ]).
 
 perms_of_distinct_modulo_rotations([H|T]) -> 
     %http://stackoverflow.com/questions/9028250/generating-all-permutations-excluding-cyclic-rotations
@@ -68,6 +74,12 @@ perms_inc_less_than([H|T]) -> [[H]] ++ eulerlist:perms([H|T]) ++ perms_inc_less_
 perms([]) -> [[]];
 perms(L)  -> [[H|T] || H <- L, T <- perms(L--[H])].
 
+%combinations shamefully stolen from http://stackoverflow.com/questions/30585697/how-to-rewrite-erlang-combinations-algorithm-in-elixir
+get_combinations(0,_)  ->    [[]];
+get_combinations(_,[]) ->    [];
+get_combinations(N,[H|T]) -> [[H|L] || L <- get_combinations(N-1,T)]++get_combinations(N,T).
+
+
 all_subsets_no_empty(L) -> [X || X <- all_proper_subsets(L) ++ [L], X /= []].  
 
 all_proper_subsets([]) -> [];
@@ -111,3 +123,25 @@ binary_search(List, N) ->
              end
       end
   end.
+
+is_perm_of_list(L1, L2) ->     %determines if L1 is a permutation of L2
+    eulerlist:list_to_freq_map(L1) == eulerlist:list_to_freq_map(L2).
+is_perm_of_fd_list(FM1, L2) -> %same as above but used when you want to check L1 against many L2 so L1 was already compiled to a FM
+    FM1 == eulerlist:list_to_freq_map(L2).
+
+interleave(L1,L2) -> 
+    %Returns L1[0], L2[0],....,L1[N],L2[N]
+    dointerleave(L1, L2, []).
+dointerleave([], [], NewL) -> NewL;
+dointerleave([L1H|L1T], [L2H|L2T], NewL) ->
+    dointerleave(L1T, L2T, NewL ++ [L1H, L2H]).
+
+filter_permutations(L) ->
+    %takes a list of lists  L and returns a new list where all permutations of other elements in L have been removed
+    %e.g., [ [1,2], [3,4], [2,1] ] returns [1,2], [3,4]
+    LSorts = [lists:sort(X) || X <- L],
+    FM = eulerlist:list_to_freq_map(LSorts),
+    K = dict:fetch_keys(FM),
+    K.
+
+

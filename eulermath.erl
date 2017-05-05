@@ -2,7 +2,9 @@
 -export([isprime/1, digitize/1, seive/1, seive_dict/1, is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
         is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, prime_factorization/2, mode/1, intconcat/2,
-        istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1]).
+        istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1,
+        number_distinct_perms/1
+        ]).
 
 -spec intconcat(integer(), integer()) -> integer().
 intconcat(X, Y) -> dointconcat(X, Y, 10).
@@ -24,7 +26,7 @@ is_bouncy(X) ->
      ).
 
 is_increasing([]) -> true;
-is_increasing([H|[]]) -> true;
+is_increasing([_|[]]) -> true;
 is_increasing([H|T]) ->
     case  H >= lists:nth(1, T) of 
     true -> is_increasing(T);
@@ -32,7 +34,7 @@ is_increasing([H|T]) ->
     end.
 
 is_decreasing([]) -> true;
-is_decreasing([H|[]]) -> true;
+is_decreasing([_|[]]) -> true;
 is_decreasing([H|T]) ->
     case  H =< lists:nth(1, T) of 
     true -> is_decreasing(T);
@@ -68,11 +70,9 @@ domode([H|T], FM, MaxKey, MaxVal) ->
     true -> domode(T, FM, MaxKey, MaxVal)
     end.
 
-%digit_list_to_int(L) -> {I,_} = string:to_integer(lists:concat(L)), I.
-digit_list_to_int(L) -> trunc(dltoi(lists:reverse(L), 0)).
-%the opposite of digitize
-dltoi([], _) -> 0;
-dltoi([H|T], I) -> H*math:pow(10, I) + dltoi(T, I+1).
+digit_list_to_int(L) -> 
+    %the opposite of digitize
+    {I,_} = string:to_integer(lists:concat(L)), I.
 
 %3> eulermath:perms_int(42).
 %[42,24]
@@ -98,7 +98,7 @@ is_pandigital_list(Digits, NDigit) ->
     FM == Identity.
 
 %raise N^M
-integerpow(N, 0) -> 1;
+integerpow(_, 0) -> 1;
 integerpow(N, M) -> dointegerpow(N, M, 1).
 dointegerpow(N, 1, Acc) -> N*Acc;
 dointegerpow(N, M, Acc) -> dointegerpow(N, M-1, Acc*N).
@@ -227,3 +227,23 @@ tri_n(N) -> trunc(N*(N+1)/2).
 ispent(N) -> X = (1 + math:sqrt(1+24*N))/6, X == trunc(X).
 ishex(N) -> X = (1 + math:sqrt(1+8*N))/4, X == trunc(X).
 %see trimath.jpg
+
+number_distinct_perms(L1) ->
+    %= Len(N)! / (NumberType1!*NumberType2!*.....) 
+    FM = eulerlist:list_to_freq_map(L1),
+    Vals = [dict:fetch(X, FM) || X <- dict:fetch_keys(FM)],
+    Denom = lists:foldl(fun(X,Y) -> Y*eulermath:factorial(X) end, 1, Vals),
+    eulermath:factorial(length(L1)) / Denom.
+
+%number_distinct_perms_inc_lt(L1) ->
+%    %see https://math.stackexchange.com/questions/463864/number-of-permutations-with-repeated-objects
+%    FM = eulerlist:list_to_freq_map(L1),
+%    N = length(L1),
+%    K = length(dict:fetch_keys(FM)),
+%    eulermath:factorial(N)*number_distinct_perms_recurrence(N,K,FM).
+%number_distinct_perms_recurrence(0,0, _) -> 1;
+%number_distinct_perms_recurrence(N,0, _) when N > 0 -> 1;
+%number_distinct_perms_recurrence(N,K,FM) -> 
+%    F = fun(I) -> (1/eulermath:factorial(I))*number_distinct_perms_recurrence(N-I,K-1,FM) end,
+%    Nk = dfetch(N,FM,0),
+%    lists:sum([F(X) || X <- lists:seq(0,min(N,Nk))]).
