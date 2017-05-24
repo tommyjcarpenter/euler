@@ -3,7 +3,8 @@
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
         is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, prime_factorization/2, mode/1, intconcat/2,
         istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1,
-        number_distinct_perms/1
+        number_distinct_perms/1,
+        gcd/2
         ]).
 
 -spec intconcat(integer(), integer()) -> integer().
@@ -247,3 +248,8 @@ number_distinct_perms(L1) ->
 %    F = fun(I) -> (1/eulermath:factorial(I))*number_distinct_perms_recurrence(N-I,K-1,FM) end,
 %    Nk = dfetch(N,FM,0),
 %    lists:sum([F(X) || X <- lists:seq(0,min(N,Nk))]).
+
+%STOLEN FROM https://github.com/yadudoc/erlang/blob/master/l-99/gcd.erl
+gcd(A, B) when B > A  -> gcd(B, A);
+gcd(A, B) when A rem B > 0 -> gcd(B, A rem B);
+gcd(A, B) when A rem B =:= 0 -> B.
