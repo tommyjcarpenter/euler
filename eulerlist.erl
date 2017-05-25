@@ -6,7 +6,8 @@
         is_perm_of_fd_list/2,
         get_combinations/2,
         interleave/2,
-        filter_permutations/1
+        filter_permutations/1,
+        is_repeating/1
         ]).
 
 perms_of_distinct_modulo_rotations([H|T]) -> 
@@ -144,4 +145,30 @@ filter_permutations(L) ->
     K = dict:fetch_keys(FM),
     K.
 
+is_repeating(L) ->
+    %determines whether L is a list of repeating numbers/binaries/strings. Finds the smallest repeater, e.g., 12 in 12121212 not 1212
+    %Returns {sublist, lengthofsublist} where sublist is the repeater (maybe [])
+    %Assumptions:
+    %  1) Must repeat at least twice. 
+    %  2) COUNTS PARTIAL REPEATS AT THE END! 
+    %  With 1,2, this means [1,2,3,1,2] will not work but  [1,2,3,1,2,3,1,2] will return [1,2,3]
+    do_is_repeating(L, trunc(length(L) / 2), "", 0).
 
+do_is_repeating(_, 0, Entity, Max) -> {Entity, Max};
+do_is_repeating(L, Length, Entity, EntityLength) ->
+    Repeats = trunc(length(L) / Length),
+    SL = lists:sublist(L, Length),
+    case lists:flatten(lists:map(fun(X) -> SL end, lists:seq(1, Repeats))) == 
+         lists:sublist(L, Repeats*Length) of 
+        true -> 
+            Leftover = length(L) - Repeats*Length,
+            case Leftover == 0 orelse lists:sublist(L, Repeats*Length+1, Leftover) == lists:sublist(L, Leftover) of
+                true ->
+                    %we keep going because this would trigger e.g., 1212 in 12121212 but actally we want the smallest repeater 12
+                    do_is_repeating(L, Length - 1, SL, Length);
+                false ->
+                    %the leftover does not match
+                    do_is_repeating(L, Length - 1, Entity, EntityLength)
+            end;
+        false -> do_is_repeating(L, Length - 1, Entity, EntityLength)
+    end.
