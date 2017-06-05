@@ -123,6 +123,7 @@ factorial(N) -> N * factorial(N-1).
 nck(N, K) -> factorial(N) / (factorial(K)*factorial(N-K)).
 
 %determines if a number is prime
+isprime(I) when I < 0 -> false;
 isprime(I) ->
     case I of
         1 -> false;
