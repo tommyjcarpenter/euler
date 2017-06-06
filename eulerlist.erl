@@ -1,5 +1,6 @@
 -module(eulerlist).
 -export([flatten_one_layer/1,listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
+        num_distinct_elements/1,
         remove_duplicates/1, perms_inc_less_than/1, all_subsets_no_empty/1, all_proper_subsets/1, special_subset/1,
         every_element_bigger/2, perms_of_distinct_modulo_rotations/1,
         is_perm_of_list/2,
@@ -101,6 +102,10 @@ list_to_freq_map(L) ->
 doltofm([], D) -> D;
 doltofm([H|T], D) ->
     doltofm(T, dict:update(H, fun(X) -> X+1 end, 1, D)).
+
+num_distinct_elements(L) ->
+    FM = list_to_freq_map(L),
+    dict:size(FM).
 
 %% setnth(List, Index, NewElement) -> List.
 setnth([_|Rest], 1, New) -> [New|Rest];
