@@ -1,5 +1,7 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, seive_dict/1, is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
+-export([isprime/1, digitize/1, seive/1, seive_dict/1, 
+         pascal/1,
+         is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
         is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, prime_factorization/2, mode/1, intconcat/2,
         istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1,
@@ -211,6 +213,30 @@ seive_dict(N) -> dict:from_list(lists:map(fun(X) -> {X, 1} end, seive(N))).
 %p to that number; and then repeat from step 1.
 seive(N) -> 
     [_|T] = doseive(lists:seq(1,N), 2), T.
+
+pascal(N) -> dopascal(1, N, []).
+    %generate the first N rows of Pascal's triangle
+    %actially returns N+1 rows where N here starts at 0 
+    %Returns [row1, row2,...] where each of these rows is a list, hence returns list of lists
+    dopascal(1, N, _) -> dopascal(2, N, [[1]]);
+    dopascal(2, N, _) -> dopascal(3, N, [[1], [1,1]]);
+    dopascal(Row, N, Triangle) -> 
+        case N+2 == Row of
+            true -> Triangle;
+            false ->
+                Mid = sumtop(lists:nth(Row-1, Triangle)),
+                NewL = [[1] ++ Mid ++ [1]],
+                dopascal(Row+1, N, lists:append(Triangle, NewL))
+        end.
+    
+    sumtop(L) -> 
+        dosumtop(L, 1, []).
+    dosumtop(L, I, ReturnL) ->
+        case I == length(L) of 
+            true -> lists:reverse(ReturnL);
+            false ->
+                dosumtop(L, I+1, [lists:nth(I, L) + lists:nth(I+1, L) | ReturnL])
+        end.
 
 doseive(L, Index) ->
     Isq = Index*Index-1,
