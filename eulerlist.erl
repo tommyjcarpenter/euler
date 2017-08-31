@@ -11,7 +11,7 @@
         is_repeating/1
         ]).
 
-perms_of_distinct_modulo_rotations([H|T]) -> 
+perms_of_distinct_modulo_rotations([H|T]) ->
     %http://stackoverflow.com/questions/9028250/generating-all-permutations-excluding-cyclic-rotations
     lists:map(fun(X) -> [H] ++ X end, eulerlist:perms(T)).
 
@@ -40,14 +40,14 @@ special_subset(F) ->
       fun({X, Y}, Last) -> special_subset_check_ss({X, Y}) andalso Last end, true, L).%, {processes, schedulers}).
 special_subset_check_ss({X, Y}) ->
     case length(X) == length(Y) of
-       true -> erlang:display("asdf"), lists:sum(X) /= lists:sum(Y); %cond1
+       true -> lists:sum(X) /= lists:sum(Y); %cond1
        false -> %cond2
           case length(X) > length(Y) of
               true -> lists:sum(X) > lists:sum(Y);
               false -> lists:sum(Y) > lists:sum(X)
           end
     end.
-   
+
 every_element_bigger(X, Y) ->
     %determines whether, if X and Y are sorted lists of size N, whether X[i] > Y[i] forall i or Y[I] > X[I] for all i
     SX = lists:sort(X),
@@ -55,12 +55,12 @@ every_element_bigger(X, Y) ->
     doeveryelb(SX, SY) orelse doeveryelb(SY, SX).
 doeveryelb([], []) -> true;
 doeveryelb([SXH | SXT], [SYH | SYT]) ->
-    case SXH > SYH of 
+    case SXH > SYH of
     true -> doeveryelb(SXT, SYT);
     false -> false
     end.
 
-bjoin(L) ->   
+bjoin(L) ->
     F = fun(A, B) -> <<A/binary, B/binary>> end,
     lists:foldr(F, <<>>, L).
 
@@ -82,7 +82,7 @@ get_combinations(_,[]) ->    [];
 get_combinations(N,[H|T]) -> [[H|L] || L <- get_combinations(N-1,T)]++get_combinations(N,T).
 
 
-all_subsets_no_empty(L) -> [X || X <- all_proper_subsets(L) ++ [L], X /= []].  
+all_subsets_no_empty(L) -> [X || X <- all_proper_subsets(L) ++ [L], X /= []].
 
 all_proper_subsets([]) -> [];
 all_proper_subsets([H|T]) ->  [T] ++  lists:map(fun(X) -> lists:flatten([H, X]) end, all_proper_subsets(T)) ++ all_proper_subsets(T).
@@ -119,7 +119,7 @@ binary_search(List, N) ->
   Middle = (Length + 1) div 2, %% saves us hassle with odd/even indexes
   case Middle of
     0 -> false; %% empty list -> item not found
-    _ -> 
+    _ ->
       Item = lists:nth(Middle, List),
       case Item of
         N -> true; %% yay, found it!
@@ -135,7 +135,7 @@ is_perm_of_list(L1, L2) ->     %determines if L1 is a permutation of L2
 is_perm_of_fd_list(FM1, L2) -> %same as above but used when you want to check L1 against many L2 so L1 was already compiled to a FM
     FM1 == eulerlist:list_to_freq_map(L2).
 
-interleave(L1,L2) -> 
+interleave(L1,L2) ->
     %Returns L1[0], L2[0],....,L1[N],L2[N]
     dointerleave(L1, L2, []).
 dointerleave([], [], NewL) -> NewL;
@@ -154,8 +154,8 @@ is_repeating(L) ->
     %determines whether L is a list of repeating numbers/binaries/strings. Finds the smallest repeater, e.g., 12 in 12121212 not 1212
     %Returns {sublist, lengthofsublist} where sublist is the repeater (maybe [])
     %Assumptions:
-    %  1) Must repeat at least twice. 
-    %  2) COUNTS PARTIAL REPEATS AT THE END! 
+    %  1) Must repeat at least twice.
+    %  2) COUNTS PARTIAL REPEATS AT THE END!
     %  With 1,2, this means [1,2,3,1,2] will not work but  [1,2,3,1,2,3,1,2] will return [1,2,3]
     do_is_repeating(L, trunc(length(L) / 2), "", 0).
 
@@ -163,9 +163,9 @@ do_is_repeating(_, 0, Entity, Max) -> {Entity, Max};
 do_is_repeating(L, Length, Entity, EntityLength) ->
     Repeats = trunc(length(L) / Length),
     SL = lists:sublist(L, Length),
-    case lists:flatten(lists:map(fun(X) -> SL end, lists:seq(1, Repeats))) == 
-         lists:sublist(L, Repeats*Length) of 
-        true -> 
+    case lists:flatten(lists:map(fun(X) -> SL end, lists:seq(1, Repeats))) ==
+         lists:sublist(L, Repeats*Length) of
+        true ->
             Leftover = length(L) - Repeats*Length,
             case Leftover == 0 orelse lists:sublist(L, Repeats*Length+1, Leftover) == lists:sublist(L, Leftover) of
                 true ->

@@ -1,5 +1,5 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, seive_dict/1, 
+-export([isprime/1, digitize/1, seive/1, seive_dict/1,
          pascal/1,
          is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
@@ -32,7 +32,7 @@ is_bouncy(X) ->
 is_increasing([]) -> true;
 is_increasing([_|[]]) -> true;
 is_increasing([H|T]) ->
-    case  H >= lists:nth(1, T) of 
+    case  H >= lists:nth(1, T) of
     true -> is_increasing(T);
     false -> false
     end.
@@ -40,16 +40,16 @@ is_increasing([H|T]) ->
 is_decreasing([]) -> true;
 is_decreasing([_|[]]) -> true;
 is_decreasing([H|T]) ->
-    case  H =< lists:nth(1, T) of 
+    case  H =< lists:nth(1, T) of
     true -> is_decreasing(T);
     false -> false
-    end.    
+    end.
 
 num_digits(P) -> length(eulermath:digitize(P)).
 
 int_reverse(P) -> eulermath:digit_list_to_int(lists:reverse(eulermath:digitize(P))).
 
-is_palindrome(P) -> 
+is_palindrome(P) ->
     L = eulermath:digitize(P),
     A = array:from_list(L),
     checkpal(A, 0, array:size(A)-1).
@@ -74,7 +74,7 @@ domode([H|T], FM, MaxKey, MaxVal) ->
     true -> domode(T, FM, MaxKey, MaxVal)
     end.
 
-digit_list_to_int(L) -> 
+digit_list_to_int(L) ->
     %the opposite of digitize
     {I,_} = string:to_integer(lists:concat(L)), I.
 
@@ -111,14 +111,14 @@ fib(N) ->
     if N < 2 -> N;
     true ->
         F = erlang:get({'fib', N}),
-        case is_integer(F) of 
+        case is_integer(F) of
             true -> F;
             false -> R = fib(N-1) + fib(N-2),
                      erlang:put({'fib', N}, R),
                      R
         end
     end.
-    
+
 factorial(0) -> 1;
 factorial(N) -> N * factorial(N-1).
 
@@ -130,18 +130,18 @@ isprime(I) ->
     case I of
         1 -> false;
         2 -> true;
-        _ -> case I rem 2 of 
+        _ -> case I rem 2 of
                    0 -> false; %optimization; before entering recursive loop, check if even
                    _ -> doisprime(I, erlang:trunc(math:sqrt(I)))
                    end
      end.
-doisprime(I, 1) -> 
-    case I of 
+doisprime(I, 1) ->
+    case I of
         1 -> false;
         _ -> true
     end;
 doisprime(I, J) when J > 1->
-    case I rem J of 
+    case I rem J of
         0 -> false;
         _ -> doisprime(I, J-1)
     end.
@@ -151,12 +151,12 @@ proper_divisors(N) ->
     dopropdivisors(N, 2, erlang:trunc(math:sqrt(N))).
 dopropdivisors(N, Curr, UpTo) ->
     if Curr > UpTo -> [1]; %include 1 but not N itself
-    true -> 
+    true ->
         K = N / Curr,
         KT = trunc(K),
         if K == KT -> %if K is integer, K and curr are divisors
             [KT | [Curr | dopropdivisors(N, Curr+1, UpTo)]];
-        true -> 
+        true ->
             dopropdivisors(N, Curr+1, UpTo)
         end
     end.
@@ -167,17 +167,17 @@ num_proper_divisors(N) ->
     donumpropdivisors(N, 1, erlang:trunc(math:sqrt(N)), 0).
 donumpropdivisors(N, Cur, UpTo, Acc) ->
     if Cur > UpTo -> Acc;
-    true -> 
+    true ->
         if N rem Cur =:= 0 ->
-            donumpropdivisors(N, Cur+1, UpTo, Acc+2); %see above 
-        true -> 
+            donumpropdivisors(N, Cur+1, UpTo, Acc+2); %see above
+        true ->
             donumpropdivisors(N, Cur+1, UpTo, Acc)
         end
     end.
 
 prime_factorization(N) ->
    dopf(eulermath:seive(N), N).
-prime_factorization(Primes_To_N, N) -> %in case you want to seive a prior for a larger list of numbers 
+prime_factorization(Primes_To_N, N) -> %in case you want to seive a prior for a larger list of numbers
    dopf(Primes_To_N, N).
 dopf(Primes, N) ->
     [H|T] = Primes,
@@ -200,9 +200,34 @@ is_perm_of(X, Y) ->
     BLY = [A || <<A:1/binary>> <= erlang:integer_to_binary(Y)], %http://stackoverflow.com/questions/29472556/split-erlang-utf8-binary-by-characters, %http://stackoverflow.com/questions/6142120/erlang-howto-make-a-list-from-this-binary-a-b-c
     eulerlist:list_to_freq_map(BLX) == eulerlist:list_to_freq_map(BLY).
 
+pascal(N) -> dopascal(1, N, []).
+    %generate the first N rows of Pascal's triangle
+    %actially returns N+1 rows where N here starts at 0
+    %Returns [row1, row2,...] where each of these rows is a list, hence returns list of lists
+    dopascal(1, N, _) -> dopascal(2, N, [[1]]);
+    dopascal(2, N, _) -> dopascal(3, N, [[1], [1,1]]);
+    dopascal(Row, N, Triangle) ->
+        case N+2 == Row of
+            true -> Triangle;
+            false ->
+                Mid = sumtop(lists:nth(Row-1, Triangle)),
+                NewL = [[1] ++ Mid ++ [1]],
+                dopascal(Row+1, N, lists:append(Triangle, NewL))
+        end.
+
+    sumtop(L) ->
+        dosumtop(L, 1, []).
+    dosumtop(L, I, ReturnL) ->
+        case I == length(L) of
+            true -> lists:reverse(ReturnL);
+            false ->
+                dosumtop(L, I+1, [lists:nth(I, L) + lists:nth(I+1, L) | ReturnL])
+        end.
+
 %for when you want a seive in which to do repeated O(1) lookups on keys
 seive_dict(N) -> dict:from_list(lists:map(fun(X) -> {X, 1} end, seive(N))).
 
+%TOMMY'S ORIGINAL SIEVE BELOW. HOWEVER THE ONE ON SO IS FASTER SO STEALING IT. WILL REVISIT MINE LATER
 %Let us first describe the original “by hand” sieve algorithm as practiced by Eratosthenes.
 %We start with a table of numbers (e.g., 2, 3, 4, 5, . . . ) and progressively
 %cross off numbers in the table until the only numbers left are primes. Specifically,
@@ -211,44 +236,29 @@ seive_dict(N) -> dict:from_list(lists:map(fun(X) -> {X, 1} end, seive(N))).
 %table, starting from p^2;
 %2. Find the next number in the table after p that is not yet crossed off and set
 %p to that number; and then repeat from step 1.
-seive(N) -> 
-    [_|T] = doseive(lists:seq(1,N), 2), T.
+%seive(N) ->
+%    [_|T] = doseive(lists:seq(1,N), 2), T.
+%doseive(L, Index) ->
+%    Isq = Index*Index-1,
+%    if Isq > length(L) -> [X || X <- L, X /= -1];
+%    true ->
+%        case  lists:nth(Index, L) == -1 of
+%        true -> doseive(L, Index + 1);
+%        false ->
+%            {L1, L2} = lists:split(Isq, L),
+%             L3 = lists:map(fun(X) -> if X == -1 orelse (X rem Index == 0 andalso X /= Index) -> -1; true  -> X  end end , L2),
+%             doseive(L1 ++ L3, Index + 1)
+%    end end.
+%stolen from https://stackoverflow.com/questions/146622/sieve-of-eratosthenes-in-erlang
+primes(Prime, Max, Primes,Integers) when Prime > Max ->
+    lists:reverse([Prime|Primes]) ++ Integers;
+primes(Prime, Max, Primes, Integers) ->
+    [NewPrime|NewIntegers] = [ X || X <- Integers, X rem Prime =/= 0 ],
+    primes(NewPrime, Max, [Prime|Primes], NewIntegers).
+seive(N) ->
+    primes(2, round(math:sqrt(N)), [], lists:seq(3,N,2)).
 
-pascal(N) -> dopascal(1, N, []).
-    %generate the first N rows of Pascal's triangle
-    %actially returns N+1 rows where N here starts at 0 
-    %Returns [row1, row2,...] where each of these rows is a list, hence returns list of lists
-    dopascal(1, N, _) -> dopascal(2, N, [[1]]);
-    dopascal(2, N, _) -> dopascal(3, N, [[1], [1,1]]);
-    dopascal(Row, N, Triangle) -> 
-        case N+2 == Row of
-            true -> Triangle;
-            false ->
-                Mid = sumtop(lists:nth(Row-1, Triangle)),
-                NewL = [[1] ++ Mid ++ [1]],
-                dopascal(Row+1, N, lists:append(Triangle, NewL))
-        end.
-    
-    sumtop(L) -> 
-        dosumtop(L, 1, []).
-    dosumtop(L, I, ReturnL) ->
-        case I == length(L) of 
-            true -> lists:reverse(ReturnL);
-            false ->
-                dosumtop(L, I+1, [lists:nth(I, L) + lists:nth(I+1, L) | ReturnL])
-        end.
 
-doseive(L, Index) ->
-    Isq = Index*Index-1,
-    if Isq > length(L) -> [X || X <- L, X /= -1];
-    true -> 
-        case  lists:nth(Index, L) == -1 of
-        true -> doseive(L, Index + 1);
-        false -> 
-            {L1, L2} = lists:split(Isq, L),
-             L3 = lists:map(fun(X) -> if X == -1 orelse (X rem Index == 0 andalso X /= Index) -> -1; true  -> X  end end , L2),
-             doseive(L1 ++ L3, Index + 1)
-    end end.
 
 %triangular, pentagnol, hexagonal numbers
 istri(N) -> X = (-1 + math:sqrt(1+8*N))/2, X == trunc(X).
@@ -258,7 +268,7 @@ ishex(N) -> X = (1 + math:sqrt(1+8*N))/4, X == trunc(X).
 %see trimath.jpg
 
 number_distinct_perms(L1) ->
-    %= Len(N)! / (NumberType1!*NumberType2!*.....) 
+    %= Len(N)! / (NumberType1!*NumberType2!*.....)
     FM = eulerlist:list_to_freq_map(L1),
     Vals = [dict:fetch(X, FM) || X <- dict:fetch_keys(FM)],
     Denom = lists:foldl(fun(X,Y) -> Y*eulermath:factorial(X) end, 1, Vals),
@@ -272,7 +282,7 @@ number_distinct_perms(L1) ->
 %    eulermath:factorial(N)*number_distinct_perms_recurrence(N,K,FM).
 %number_distinct_perms_recurrence(0,0, _) -> 1;
 %number_distinct_perms_recurrence(N,0, _) when N > 0 -> 1;
-%number_distinct_perms_recurrence(N,K,FM) -> 
+%number_distinct_perms_recurrence(N,K,FM) ->
 %    F = fun(I) -> (1/eulermath:factorial(I))*number_distinct_perms_recurrence(N-I,K-1,FM) end,
 %    Nk = dfetch(N,FM,0),
 %    lists:sum([F(X) || X <- lists:seq(0,min(N,Nk))]).
