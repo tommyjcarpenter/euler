@@ -155,7 +155,7 @@ is_repeating(L) ->
     %Returns {sublist, lengthofsublist} where sublist is the repeater (maybe [])
     %Assumptions:
     %  1) Must repeat at least twice.
-    %  2) COUNTS PARTIAL REPEATS AT THE END!
+    %  2) COUNTS PARTIAL REPEATS AT THE END! Meaning if the pattern is 4 but the array is of length 15, will find the 4 4 4 then check the first 3 of the remaining 15
     %  With 1,2, this means [1,2,3,1,2] will not work but  [1,2,3,1,2,3,1,2] will return [1,2,3]
     do_is_repeating(L, trunc(length(L) / 2), "", 0).
 
@@ -163,7 +163,7 @@ do_is_repeating(_, 0, Entity, Max) -> {Entity, Max};
 do_is_repeating(L, Length, Entity, EntityLength) ->
     Repeats = trunc(length(L) / Length),
     SL = lists:sublist(L, Length),
-    case lists:flatten(lists:map(fun(X) -> SL end, lists:seq(1, Repeats))) ==
+    case lists:flatten(lists:map(fun(_) -> SL end, lists:seq(1, Repeats))) ==
          lists:sublist(L, Repeats*Length) of
         true ->
             Leftover = length(L) - Repeats*Length,

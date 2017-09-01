@@ -328,22 +328,22 @@ sqrt(X, Context) ->
 sqrt(X, Context, Shift, C) ->
   case Shift >= 0 of
     true ->
-      sqrt(X, Context, Shift, C * trunc(math:pow(10, Shift bsl 1)), true);
+      sqrt(X, Context, Shift, C * trunc(integer_pow(10, Shift bsl 1)), true);
     false ->
-      Operand = trunc(math:pow(10, (- Shift) bsl 1)),
+      Operand = trunc(integer_pow(10, (- Shift) bsl 1)),
       sqrt(X, Context, Shift, C div Operand, C rem Operand =:= 0)
   end.
 
 sqrt(X, Context, Shift, C, Exact) ->
   E = exponent(X) bsr 1,
-  N = sqrt_loop(C, trunc(math:pow(10, decimal_context:precision(Context) + 1))),
+  N = sqrt_loop(C, trunc(integer_pow(10, decimal_context:precision(Context) + 1))),
   case Exact and (N * N =:= C) of
     true ->
       case Shift >= 0 of
         true ->
-          sqrt_round(Context, {0, N div trunc(math:pow(10, Shift)), E});
+          sqrt_round(Context, {0, N div trunc(integer_pow(10, Shift)), E});
         false ->
-          sqrt_round(Context, {0, N * trunc(math:pow(10, -Shift)), E})
+          sqrt_round(Context, {0, N * trunc(integer_pow(10, -Shift)), E})
       end;
     false ->
       sqrt_round(Context, {0, N, E - Shift})
