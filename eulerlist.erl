@@ -8,7 +8,8 @@
         get_combinations/2,
         interleave/2,
         filter_permutations/1,
-        is_repeating/1
+        is_repeating/1,
+        max_index/1
         ]).
 
 perms_of_distinct_modulo_rotations([H|T]) ->
@@ -176,4 +177,15 @@ do_is_repeating(L, Length, Entity, EntityLength) ->
                     do_is_repeating(L, Length - 1, Entity, EntityLength)
             end;
         false -> do_is_repeating(L, Length - 1, Entity, EntityLength)
+    end.
+
+max_index(L) ->
+    %find the index of L at which L is maximized
+    do_max_index(L, 1, -1, -1).
+
+do_max_index([], _, _, MI) -> MI;
+do_max_index([H|T], I, M, MI) ->
+    case H > M of
+        true -> do_max_index(T, I+1, H, I);
+        false -> do_max_index(T, I+1, M, MI)
     end.

@@ -1,5 +1,5 @@
 -module(eulermath).
--export([isprime/1, digitize/1, seive/1, seive_dict/1,
+-export([isprime/1, digitize/1, seive/1, seive_dict/1, is_square/1,
          pascal/1,
          is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
@@ -16,6 +16,9 @@ dointconcat(X, Y, Pow) ->
     if Y >= Pow -> dointconcat(X,Y,Pow*10);
     true -> X*Pow + Y
     end.
+
+is_square(N) ->
+    math:sqrt(N) == erlang:trunc(math:sqrt(N)).
 
 is_bouncy(X) when X < 0 -> {error};
 is_bouncy(X) ->
