@@ -9,7 +9,9 @@
         interleave/2,
         filter_permutations/1,
         is_repeating/1,
-        max_index/1
+        max_index/1,
+        list_to_dict_key_by_index/1,
+        multiply/1
         ]).
 
 perms_of_distinct_modulo_rotations([H|T]) ->
@@ -189,3 +191,14 @@ do_max_index([H|T], I, M, MI) ->
         true -> do_max_index(T, I+1, H, I);
         false -> do_max_index(T, I+1, M, MI)
     end.
+
+list_to_dict_key_by_index(L) ->
+    %convert ["A", "B"] into {1 : "A", 2: "B"}
+    do_list_to_dict_key_by_index(L, 1, dict:new()).
+do_list_to_dict_key_by_index([], _, D) -> D;
+do_list_to_dict_key_by_index([H|T], I, D) ->
+    do_list_to_dict_key_by_index(T, I+1, dict:store(I, H, D)).
+
+multiply(L) ->
+    %from http://erlang.org/doc/man/lists.html#foldl-3
+    lists:foldl(fun(X, Prod) -> X * Prod end, 1, L).
