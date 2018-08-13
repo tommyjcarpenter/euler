@@ -1,9 +1,12 @@
 -module(eulermath).
 -export([isprime/1, digitize/1, seive/1, seive_dict/1, is_square/1,
+         is_int/1,
          pascal/1,
          is_perm_of/2, fib/1, factorial/1, num_proper_divisors/1, proper_divisors/1,
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
-        is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1, prime_factorization/1, prime_factorization/2, mode/1, intconcat/2,
+        is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1,
+        prime_factorization/2,
+        mode/1, intconcat/2,
         istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1,
         number_distinct_perms/1,
         gcd/2,
@@ -19,6 +22,9 @@ dointconcat(X, Y, Pow) ->
 
 is_square(N) ->
     math:sqrt(N) == erlang:trunc(math:sqrt(N)).
+
+is_int(N) ->
+    erlang:trunc(N) == N.
 
 is_bouncy(X) when X < 0 -> {error};
 is_bouncy(X) ->
@@ -178,10 +184,12 @@ donumpropdivisors(N, Cur, UpTo, Acc) ->
         end
     end.
 
-prime_factorization(N) ->
-   dopf(eulermath:seive(N), N).
-prime_factorization(Primes_To_N, N) -> %in case you want to seive a prior for a larger list of numbers
-   dopf(Primes_To_N, N).
+prime_factorization(Primes_To_N_Over_Two, N) ->
+    %Must pass in a seive to N/2
+    case isprime(N) of
+        true -> dopf(Primes_To_N_Over_Two ++ [N], N);
+        false -> dopf(Primes_To_N_Over_Two, N)
+    end.
 dopf(Primes, N) ->
     [H|T] = Primes,
     if H > N -> [];

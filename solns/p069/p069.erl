@@ -6,7 +6,9 @@ timesolve() ->
 
 solve() ->
     MAXN = 1000000,
-    S = eulermath:seive(MAXN),
+    erlang:display("Seiving"),
+    S = eulermath:seive(trunc(math:ceil(MAXN/2))),
+    erlang:display("Computing Factors"),
     PFacs = lists:map(fun(X) -> pfac(X, S) end, lists:seq(1,MAXN)),
     erlang:display("Creating dict"),
     PFacsDict = eulerlist:list_to_dict_key_by_index(PFacs),

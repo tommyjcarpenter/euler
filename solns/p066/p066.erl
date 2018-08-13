@@ -7,9 +7,6 @@ timesolve() ->
 solve() ->
     find_xs().
 
-isint(N) ->
-    erlang:trunc(N) == N.
-
 find_xs() ->
     Xs = plists:map(fun find_smallest/1, lists:seq(1,1000)),
     erlang:display(Xs),
@@ -32,7 +29,7 @@ do_find_smallest(X, D) ->
     % X^2 - 1 = DY^2
     % (X^2 - 1)/D = Y^2
     Y = math:sqrt((X*X - 1)/D),
-    case isint(Y) of
+    case eulermath:is_int(Y) of
         true -> X;  % if Y is an int here, we are done
         false ->
             % at least slightly better is to figure out the next X that makes the next Y an integer
