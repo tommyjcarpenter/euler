@@ -9,10 +9,18 @@
 -module(s031).
 -export([solve/0]).
 
+
+% TOMMY NOTE:
+% I did this one early on, before learning that Erlang has a dict
+% The below is not as effiecient as solution p076
+% p076 is essentially the same thing, but using dicts, so all the lists:set_nth turn into 0(1) operations
+% but I didn't feel like rewriting this
+% So, see the answer to 76 for a more efficient version than this that uses dicts instead of lists
+
 %computes the score of a list
-score([], Index) -> 0; 
+score([], Index) -> 0;
 score([H|T], Index) ->
-    case Index of 
+    case Index of
         1 -> V = 1;
         2 -> V = 2;
         3 -> V = 5;
@@ -28,13 +36,13 @@ solve() ->
 
 ru(L) ->
     F = erlang:get({'ru', L}),
-    case is_integer(F)  of 
+    case is_integer(F)  of
         true ->  0;
-        false -> 
+        false ->
             S = score(L, 1),
-            if S > 200 -> 
+            if S > 200 ->
                 R = 0;
-            true  ->  
+            true  ->
                 if S == 200 -> R = 1;
                 true ->
                     R = ru(shared_euler:setnth(L,1,lists:nth(1,L)+1))+ru(shared_euler:setnth(L,2,lists:nth(2,L)+1))+ru(shared_euler:setnth(L,3,lists:nth(3,L)+1))+ru(shared_euler:setnth(L,4,lists:nth(4,L)+1))+ru(shared_euler:setnth(L,5,lists:nth(5,L)+1))+ru(shared_euler:setnth(L,6,lists:nth(6,L)+1))+ru(shared_euler:setnth(L,7,lists:nth(7,L)+1))
