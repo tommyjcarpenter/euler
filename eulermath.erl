@@ -10,7 +10,9 @@
         istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1,
         number_distinct_perms/1,
         gcd/2,
-        b10_to_2/1
+        gcd_memoized/2,
+        b10_to_2/1,
+        relative_primes/1
         ]).
 
 -spec intconcat(integer(), integer()) -> integer().
@@ -303,7 +305,43 @@ gcd(A, B) when B > A  -> gcd(B, A);
 gcd(A, B) when A rem B > 0 -> gcd(B, A rem B);
 gcd(A, B) when A rem B =:= 0 -> B.
 
+%use when you have overlapping subproblems computing the same GCD many times
+gcd_memoized(A, B) ->
+    C = erlang:get({A, B}),
+    case is_integer(C) of
+        true -> C;
+        false ->
+            R = case B > A of
+                    true -> gcd_memoized(B, A);
+                    false ->
+                        case A rem B > 0 of
+                            true -> gcd_memoized(B, A rem B);
+                            false -> B
+                        end
+            end,
+            erlang:put({A,B}, R),
+            R
+    end.
+
+
 b10_to_2(I) -> do_b10_to_2(I, []). %converts base 10 to base 2, %algorithm from http://chortle.ccsu.edu/assemblytutorial/zAppendixH/appH_4.html, CCSU represent!!!
     do_b10_to_2(0,BitList) -> digit_list_to_int(BitList);
     do_b10_to_2(Num, BitList) -> do_b10_to_2(trunc(Num / 2), [Num rem 2 | BitList]).
 
+
+relative_primes(N) ->
+    dofindrelativeprimes(lists:seq(2, N-2), N, [1, N-1]).
+dofindrelativeprimes([], _, SoFar) -> SoFar;
+dofindrelativeprimes([H|T], N, SoFar) ->
+    case H*H > N of
+        true ->
+            dofindrelativeprimes([], N, [H | SoFar] ++ T);
+        false ->
+            case N rem H == 0 of
+                true ->
+                    %H divides H
+                    dofindrelativeprimes([Y || Y <- T, Y rem H /= 0], N, SoFar);
+                false ->
+                    dofindrelativeprimes(T, N, [H | SoFar])
+            end
+    end.
