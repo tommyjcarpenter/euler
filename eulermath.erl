@@ -328,20 +328,17 @@ b10_to_2(I) -> do_b10_to_2(I, []). %converts base 10 to base 2, %algorithm from 
     do_b10_to_2(0,BitList) -> digit_list_to_int(BitList);
     do_b10_to_2(Num, BitList) -> do_b10_to_2(trunc(Num / 2), [Num rem 2 | BitList]).
 
-
+relative_primes(1) -> [];
+relative_primes(2) -> [1];
 relative_primes(N) ->
+    %implemented from https://math.stackexchange.com/questions/536991/how-can-i-list-all-numbers-relatively-prime-to-x-but-less-than-x
     dofindrelativeprimes(lists:seq(2, N-2), N, [1, N-1]).
 dofindrelativeprimes([], _, SoFar) -> SoFar;
 dofindrelativeprimes([H|T], N, SoFar) ->
-    case H*H > N of
-        true ->
-            dofindrelativeprimes([], N, [H | SoFar] ++ T);
-        false ->
-            case N rem H == 0 of
-                true ->
-                    %H divides H
-                    dofindrelativeprimes([Y || Y <- T, Y rem H /= 0], N, SoFar);
-                false ->
-                    dofindrelativeprimes(T, N, [H | SoFar])
-            end
+    case N rem H == 0 of
+       true ->
+           %H divides H; %Do not include it or any multoples
+           dofindrelativeprimes([Y || Y <- T, Y rem H /= 0], N, SoFar);
+       false ->
+           dofindrelativeprimes(T, N, [H | SoFar])
     end.
