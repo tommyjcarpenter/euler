@@ -2,6 +2,7 @@
 -export([timesolve/0, solve/0]).
 
 timesolve() ->
+    code:add_path("/Users/tommy/Development/github/euler"),
     erlang:display(timer:tc(p070p, solve, [])).
 
 solve() ->
@@ -37,7 +38,6 @@ solve() ->
 
 totient(N, Facs) ->
     % from https://en.wikipedia.org/wiki/Euler%27s_totient_function
-    Terms = [1 - 1/X || X <- Facs],
     % this time we return {rat, tot, index} so we can quickly start palindroming from the top
-    Tot = N*eulerlist:multiply(Terms),
+    Tot = eulermath:totient(Facs, N),
     {N/Tot, Tot, N, Facs}.

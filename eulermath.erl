@@ -12,7 +12,8 @@
         gcd/2,
         gcd_memoized/2,
         b10_to_2/1,
-        relative_primes/1
+        relative_primes/1,
+        totient/2
         ]).
 
 -spec intconcat(integer(), integer()) -> integer().
@@ -342,3 +343,7 @@ dofindrelativeprimes([H|T], N, SoFar) ->
        false ->
            dofindrelativeprimes(T, N, [H | SoFar])
     end.
+
+totient(PrimeFacs, N) ->
+    %https://en.wikipedia.org/wiki/Euler%27s_totient_function
+    round(N*eulerlist:multiply([1 - (1/P) || P <- PrimeFacs])).
