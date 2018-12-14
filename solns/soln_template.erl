@@ -3,7 +3,8 @@
 
 timesolve() ->
     code:add_path("/Users/tommy/Development/github/euler"),
-    erlang:display(timer:tc(pXXX, solve, [])).
+    {T,A} = timer:tc(pXXX, solve, []),
+    erlang:display({T/1000000, A}).
 
 solve() ->
     todo

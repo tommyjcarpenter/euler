@@ -6,6 +6,7 @@
         integerpow/2, is_pandigital_num/1, is_pandigital_list/1, perms_int/1, perms_inc_less_than_int/1,
         is_pandigital_list/2, is_pandigital_num/2, digit_list_to_int/1,
         prime_factorization/2,
+        prime_factorization_memoized/2,
         mode/1, intconcat/2,
         istri/1, tri_n/1, ispent/1, ishex/1, is_palindrome/1, int_reverse/1, num_digits/1, nck/2, is_bouncy/1, is_increasing/1, is_decreasing/1,
         number_distinct_perms/1,
@@ -13,7 +14,8 @@
         gcd_memoized/2,
         b10_to_2/1,
         relative_primes/1,
-        totient/2
+        totient/2,
+        totient_sum/1
         ]).
 
 -spec intconcat(integer(), integer()) -> integer().
@@ -203,6 +205,32 @@ dopf(Primes, N) ->
         end
     end.
 
+
+prime_factorization_memoized(Primes_To_N_Over_Two, N) ->
+    %Must pass in a seive to N/2
+    case isprime(N) of
+        true -> dopfm(Primes_To_N_Over_Two ++ [N], N);
+        false -> dopfm(Primes_To_N_Over_Two, N)
+    end.
+dopfm(Primes, N) ->
+    C = erlang:get({pf, N}),
+    case is_list(C) of
+        true -> C;
+        false ->
+            [H|T] = Primes,
+            R = if H > N -> [];
+                true ->
+                    case  N rem H == 0 of
+                        true -> [H | dopfm(Primes, trunc(N/H))]; %factors could repeat dont remove head
+                        _ -> dopfm(T, N)
+                    end
+           end,
+           erlang:put({pf, N}, R),
+           R
+    end.
+
+
+
 %creates a list of digits from an int
 digitize(N) when N < 10 -> [N]; %stolen from http://stackoverflow.com/questions/32670978/problems-in-printing-each-digit-of-a-number-in-erlang
 digitize(N) -> digitize(N div 10)++[N rem 10].
@@ -346,4 +374,16 @@ dofindrelativeprimes([H|T], N, SoFar) ->
 
 totient(PrimeFacs, N) ->
     %https://en.wikipedia.org/wiki/Euler%27s_totient_function
+    % used when  you already have the prime factors
     round(N*eulerlist:multiply([1 - (1/P) || P <- PrimeFacs])).
+
+totient_sum(N) ->
+    %sum the totients up to N
+    SL = eulermath:seive(trunc(math:ceil(N/2))),
+    do_totient_sum(1, N+1, SL, 0).
+do_totient_sum(N, N, _, Count) -> Count;
+do_totient_sum(I, N, SL, Count) ->
+    erlang:display(I),
+    PF = eulerlist:remove_duplicates(eulermath:prime_factorization(SL, I)),
+    T = eulermath:totient(PF, I),
+    do_totient_sum(I+1,N,SL,Count+T).
