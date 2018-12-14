@@ -14,7 +14,7 @@
 timesolve() ->
     code:add_path("/Users/tommy/Development/github/euler"),
     {T, A} =  timer:tc(p072, solve, []),
-    erlang:display({T/1000000.0, A}).
+    erlang:display({T/1000000.0, trunc(A)}).
 
 solve() ->
     eulermath:totient_sum(1000000)-1.
