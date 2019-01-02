@@ -14,7 +14,8 @@
         b10_to_2/1,
         relative_primes/1,
         totient/2,
-        totient_sum/1
+        totient_sum/1,
+        pth_place/2
         ]).
 
 -spec intconcat(integer(), integer()) -> integer().
@@ -384,3 +385,14 @@ ind(N, D) ->
 %    PF = eulerlist:remove_duplicates(eulermath:prime_factorization(SL, I)),
 %    T = eulermath:totient(PF, I),
 %    do_totient_sum(I+1,N,SL,Count+T).
+
+%what digit is in the Pth (starting at 1s=1, tens=2, etc) of N
+pth_place(N, P) ->
+    %example came from Par:
+    %(20456%1000) = 456
+    %456 / 100 = 4.56
+    %trunc(4.56) = 4
+    X = eulermath:integerpow(10, P),
+    R1 = N rem X*10,
+    R2 = R1 / X,
+    trunc(R2).
