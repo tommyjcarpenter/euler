@@ -18,6 +18,10 @@ solve() ->
     %
     % the trick was to find an "O(1)" meaning fast math comp, not string manipulation or anythong,
     % method of determining what digit is in the pth place of N.
+    %
+    % edit: BAH while reading the forums after doing this problem I saw this comment:
+    %   "The square ends with a 0, so n must be a multiple of 10, hence n2 is a multiple of 100."
+    % damn sad I missed that =(
 
     iterate().
 
