@@ -21,6 +21,7 @@ solve() ->
     %
     % edit: BAH while reading the forums after doing this problem I saw this comment:
     %   "The square ends with a 0, so n must be a multiple of 10, hence n2 is a multiple of 100."
+    %   "Square must end in 900 so n must end in 30 or 70.  This makes brute force very feasible."
     % damn sad I missed that =(
 
     iterate().
@@ -47,7 +48,7 @@ iterate(N) ->
         true ->
             {N, N*N};
         false ->
-            iterate(N+1)
+            iterate(N+10)
     end.
 
 
