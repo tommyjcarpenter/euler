@@ -1,22 +1,21 @@
 -module(eulerlist).
--export([flatten_one_layer/1,listslice/3, perms/1, alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
-        num_distinct_elements/1,
-        remove_duplicates/1, perms_inc_less_than/1, all_subsets_no_empty/1, all_proper_subsets/1, special_subset/1,
-        every_element_bigger/2, perms_of_distinct_modulo_rotations/1,
-        is_perm_of_list/2,
-        is_perm_of_fd_list/2,
-        get_combinations/2,
-        interleave/2,
-        filter_permutations/1,
-        is_repeating/1,
-        max_index/1,
-        list_to_dict_key_by_index/1,
-        multiply/1
-        ]).
-
-perms_of_distinct_modulo_rotations([H|T]) ->
-    %http://stackoverflow.com/questions/9028250/generating-all-permutations-excluding-cyclic-rotations
-    lists:map(fun(X) -> [H] ++ X end, eulerlist:perms(T)).
+-export([flatten_one_layer/1,listslice/3,
+         perms/1,
+         perms_heap/1,
+         alphabetnum/1, setnth/3, bjoin/1,  list_to_freq_map/1, binary_search/2,
+         num_distinct_elements/1,
+         remove_duplicates/1, perms_inc_less_than/1, all_subsets_no_empty/1, all_proper_subsets/1, special_subset/1,
+         every_element_bigger/2,
+         is_perm_of_list/2,
+         is_perm_of_fd_list/2,
+         get_combinations/2,
+         interleave/2,
+         filter_permutations/1,
+         is_repeating/1,
+         max_index/1,
+         list_to_dict_key_by_index/1,
+         multiply/1
+         ]).
 
 %2> eulerlist:flatten_one_layer([[[1],[2],[3]]]).
 %[[1],[2],[3]]
@@ -67,17 +66,90 @@ bjoin(L) ->
     F = fun(A, B) -> <<A/binary, B/binary>> end,
     lists:foldr(F, <<>>, L).
 
+%stolen from the erlang book
+%1> eulerlist:perms([4,2]).
+%[[4,2],[2,4]]
+%% WARNING: this naive algorithm doesn't work when the input has duplicates like [4,2,2].
+perms([]) -> [[]];
+perms(L)  -> [[H|T] || H <- L, T <- perms(L--[H])].
+
 %1> eulerlist:perms_inc_less_than([4,2]).
 %[[4],[4,2],[2,4],[2]]
 perms_inc_less_than([]) -> [];
 perms_inc_less_than([H|[]]) -> [[H]];
 perms_inc_less_than([H|T]) -> [[H]] ++ eulerlist:perms([H|T]) ++ perms_inc_less_than(T).
 
-%stolen from the erlang book
-%1> eulerlist:perms([4,2]).
-%[[4,2],[2,4]]
-perms([]) -> [[]];
-perms(L)  -> [[H|T] || H <- L, T <- perms(L--[H])].
+% NOTE:
+% This was my very hacky implementation of "heaps algorithm for permutations" which I thought I needed for problem 62 but didn't.
+% I call it hacky because it uses the profess dictionary to mutate lists, whioch is a no no.
+% However, all the pseduo code I read for this algiorithm used a single mutatable array, so it was difficult to translate this into erlang which does not allow mutation, and I didn't have time to figure out how to adapt it.
+% It remains to be seen whethger this is even faster at all than the very simple one above.
+%procedure generate(n : integer, A : array of any):
+%    if n = 1 then
+%          output(A)
+%    else
+%        for i := 0; i < n; i += 1 do
+%            generate(n - 1, A)
+%            if n is even then
+%                swap(A[i], A[n-1])
+%            else
+%                swap(A[0], A[n-1])
+%            end if
+%        end for
+%    end if
+%procedure generate(k : integer, A : array of any):
+%    if k = 1 then
+%        output(A)
+%    else
+%        // Generate permutations with kth unaltered
+%        // Initially k == length(A)
+%        generate(k - 1, A)
+%
+%        // Generate permutations for kth swapped with each k-1 initial
+%        for i := 0; i < k-1; i += 1 do
+%            // Swap choice dependent on parity of k (even or odd)
+%            if k is even then
+%                swap(A[i], A[k-1]) // zero-indexed, the kth is at k-1
+%            else
+%                swap(A[0], A[k-1])
+%            end if
+%            generate(k - 1, A)
+%
+%        end for
+%    end if
+init_fixed_array_list(L) ->
+    A = array:new(length(L), {fixed, true}),
+    do_init_fixed_array_list(L, 0, A).
+do_init_fixed_array_list([], _, A) -> A;
+do_init_fixed_array_list([H|T], I, A) ->
+    do_init_fixed_array_list(T, I+1, array:set(I, H, A)).
+perms_heap(L) ->
+    A= init_fixed_array_list(L),
+    erlang:put(arr, A),
+    erlang:put(arrsolns, []),
+    do_perms_heap(length(L)),
+    erlang:get(arrsolns).
+do_perms_heap(1) ->
+    L = [X || X <- array:to_list(erlang:get(arr)), X /= undefined],
+    erlang:put(arrsolns, lists:append([L], erlang:get(arrsolns)));
+do_perms_heap(N) ->
+    lists:map(fun(X) -> do_inner_generate(N, X) end, lists:seq(0, N-1)).
+
+do_inner_generate(N, I) ->
+    do_perms_heap(N-1),
+    A = erlang:get(arr),
+    case N rem 2 == 0 of
+        true ->
+            Temp = array:get(I, A),
+            A2 = array:set(I, array:get(N-1, A), A),
+            A3 = array:set(N-1, Temp, A2);
+        false ->
+            Temp = array:get(N-1, A),
+            A2 = array:set(N-1, array:get(0, A), A),
+            A3 = array:set(0, Temp, A2)
+        end,
+    erlang:put(arr, A3)
+    .
 
 %combinations shamefully stolen from http://stackoverflow.com/questions/30585697/how-to-rewrite-erlang-combinations-algorithm-in-elixir
 get_combinations(0,_)  ->    [[]];
