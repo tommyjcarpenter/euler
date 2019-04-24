@@ -5,6 +5,15 @@ import (
 	"strconv"
 )
 
+// how is this not in the math lib????
+func Factorial(n int) (result int) {
+	if n > 0 {
+		result = n * Factorial(n-1)
+		return result
+	}
+	return 1
+}
+
 // is x a permutation of y
 func IsPermutation(x int, y int) bool {
 	str1 := strconv.Itoa(x)
