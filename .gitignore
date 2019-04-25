@@ -1,3 +1,7 @@
+gosolns/src/golang.org/
+gosolns/src/github.com/
+gosolns/bin/
+gosolns/src/honnef.co/
 .DS_Store
 *.dump*
 *.beam

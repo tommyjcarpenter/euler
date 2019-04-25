@@ -1,6 +1,7 @@
-package eulermath
+package eulerlib
 
 import (
+	"math"
 	"reflect"
 	"strconv"
 )
@@ -39,4 +40,11 @@ func IsPermutation(x int, y int) bool {
 		}
 	}
 	return reflect.DeepEqual(m1, m2)
+}
+
+// https://www.quora.com/How-do-I-find-the-number-of-digits-in-a-product-of-two-numbers
+// I thought I needed this for problem 99 but this doesn't help problem 99 because it requires to know a and b. But maybe it will be useful later.
+func DigitsInProduct(a int, b int) int {
+	// Floor (Log (A) + Log(B)) + 1
+	return int(math.Floor(math.Log10(float64(a))+math.Log10(float64(b)))) + 1
 }

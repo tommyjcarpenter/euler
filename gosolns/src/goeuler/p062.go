@@ -13,7 +13,7 @@ func main() {
 	for i := 0; i < n; i++ {
 		total := 0
 		for j := 0; j < n; j++ {
-			if eulermath.IsPermutation(i*i*i, j*j*j) {
+			if eulerlib.IsPermutation(i*i*i, j*j*j) {
 				fmt.Printf("hit, i=%d, j=%d, i^3=%d, j^3=%d\n", i, j, i*i*i, j*j*j)
 				total++
 				if total == 5 {

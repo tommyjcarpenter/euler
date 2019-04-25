@@ -37,10 +37,10 @@ func main() {
 
 		for {
 			// optimization: if we are on any total we've seen already, short circuit
-			if eulermath.KeyExists(leadto1, total) {
+			if eulerlib.KeyExists(leadto1, total) {
 				break
 			}
-			if eulermath.KeyExists(leadto89, total) {
+			if eulerlib.KeyExists(leadto89, total) {
 				eightynine++
 				break
 			}
