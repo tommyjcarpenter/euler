@@ -15,6 +15,7 @@ How many starting numbers below ten million will arrive at 89?
 
 import (
 	"fmt"
+	"goeuler/pkg/goeulerlib"
 	"strconv"
 	"time"
 )
@@ -24,6 +25,9 @@ func main() {
 
 	eightynine := 0
 
+	leadto1 := make(map[int]int)
+	leadto89 := make(map[int]int)
+
 	for i := 1; i < 10000000; i++ {
 		if i%100000 == 0 {
 			fmt.Println(i)
@@ -32,8 +36,16 @@ func main() {
 		total := i
 
 		for {
-			m[total] = 1
+			// optimization: if we are on any total we've seen already, short circuit
+			if eulermath.KeyExists(leadto1, total) {
+				break
+			}
+			if eulermath.KeyExists(leadto89, total) {
+				eightynine++
+				break
+			}
 
+			m[total] = 1
 			digits := strconv.Itoa(total)
 			total = 0
 			for j := 0; j < len(digits); j++ {
@@ -43,9 +55,15 @@ func main() {
 
 			if total == 89 {
 				eightynine++
+				for k, v := range m {
+					leadto89[k] = v
+				}
 				break
 			}
 			if total == 1 {
+				for k, v := range m {
+					leadto1[k] = v
+				}
 				break
 			}
 
