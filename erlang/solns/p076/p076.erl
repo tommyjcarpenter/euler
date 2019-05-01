@@ -9,7 +9,7 @@ solve() ->
 
 ways(N) ->
     % Ways to make 6 is  ways to make 6 with using a 6, + ways to make 6 without using a 6
-    ways(N, [N], [])  + ways(N, [], [N]).
+    ways(N, [], []).
 
 ways(Target, MustUse, CantUse) ->
     C = erlang:get({Target, MustUse, CantUse}),

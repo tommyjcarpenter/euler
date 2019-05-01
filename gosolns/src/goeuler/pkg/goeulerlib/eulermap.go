@@ -7,3 +7,9 @@ func KeyExists(m map[int]int, k int) bool {
 	}
 	return false
 }
+func KeyExistsStringInt(m map[string]int, k string) bool {
+	if _, ok := m[k]; ok {
+		return true
+	}
+	return false
+}

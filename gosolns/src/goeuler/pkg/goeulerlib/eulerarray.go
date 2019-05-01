@@ -10,12 +10,22 @@ func Contains(a []int, x int) bool {
 	return false
 }
 
-func Max(v []int) (m int) {
+func Max(v []int) int {
+	m := -1
+	for i := 0; i < len(v); i++ {
+		if v[i] > m {
+			m = v[i]
+		}
+	}
+	return m
+}
+
+func Min(v []int) (m int) {
 	if len(v) > 0 {
 		m = v[0]
 	}
 	for i := 1; i < len(v); i++ {
-		if v[i] > m {
+		if v[i] < m {
 			m = v[i]
 		}
 	}
