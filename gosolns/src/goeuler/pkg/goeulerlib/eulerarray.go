@@ -10,6 +10,15 @@ func Contains(a []int, x int) bool {
 	return false
 }
 
+func ContainsUint64(a []uint64, x uint64) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
 func Max(v []int) int {
 	m := -1
 	for i := 0; i < len(v); i++ {
@@ -30,4 +39,12 @@ func Min(v []int) (m int) {
 		}
 	}
 	return
+}
+
+func Sum(l []int) int {
+	sum := 0
+	for i := range l {
+		sum += l[i]
+	}
+	return sum
 }
