@@ -41,6 +41,18 @@ func Min(v []int) (m int) {
 	return
 }
 
+func MinUint64(v []uint64) (m uint64) {
+	if len(v) > 0 {
+		m = v[0]
+	}
+	for i := 1; i < len(v); i++ {
+		if v[i] < m {
+			m = v[i]
+		}
+	}
+	return
+}
+
 func Sum(l []int) int {
 	sum := 0
 	for i := range l {

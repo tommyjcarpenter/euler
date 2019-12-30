@@ -13,3 +13,9 @@ func KeyExistsStringInt(m map[string]int, k string) bool {
 	}
 	return false
 }
+func KeyExistsStringUint64(m map[string]uint64, k string) bool {
+	if _, ok := m[k]; ok {
+		return true
+	}
+	return false
+}
